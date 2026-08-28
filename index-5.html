@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faizan Development — Web, App &amp; Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#15111c; --surface:#221b2c; --paper:#f1ece2; --muted:#a99bb0;
+  --gold:#d3a24a; --teal:#4fa693; --coral:#c96b4f; --violet:#7d8fd0; --pink:#c07dc0;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--ink);color:var(--paper);font-family:'Space Grotesk',sans-serif;line-height:1.6;overflow-x:hidden;}
+::selection{background:var(--gold);color:var(--ink);}
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;display:block;border-radius:2px;}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px;}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
+h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;letter-spacing:-.01em;}
+
+/* NAV */
+header{position:sticky;top:0;left:0;right:0;z-index:200;background:rgba(21,17,28,.92);backdrop-filter:blur(10px);border-bottom:1px solid rgba(241,236,226,.08);}
+.nav{max-width:1100px;margin:0 auto;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;}
+.nav-mark{font-family:'Fraunces',serif;font-weight:600;font-size:17px;}
+.nav-links{display:flex;gap:24px;list-style:none;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;}
+.nav-links a{color:var(--muted);transition:color .2s ease;padding-bottom:2px;border-bottom:1px solid transparent;}
+.nav-links a:hover,.nav-links a.active{color:var(--paper);border-color:var(--gold);}
+.nav-toggle{display:none;background:none;border:1px solid rgba(241,236,226,.25);color:var(--paper);width:38px;height:38px;border-radius:4px;font-size:16px;}
+@media (max-width:800px){
+  .nav-links{position:fixed;top:57px;left:0;right:0;bottom:0;background:var(--ink);flex-direction:column;gap:0;padding:10px 24px;transform:translateY(-110%);transition:transform .3s ease;overflow-y:auto;}
+  .nav-links.open{transform:translateY(0);}
+  .nav-links li{padding:16px 0;border-bottom:1px solid rgba(241,236,226,.08);font-size:13px;}
+  .nav-toggle{display:block;}
+}
+
+/* PAGES */
+.page{display:none;}
+.page.active{display:block;}
+
+/* HERO */
+.hero{min-height:82vh;display:flex;flex-direction:column;justify-content:center;padding:60px 0 40px;position:relative;}
+.hero-glow{position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(600px 400px at 15% 20%,rgba(211,162,74,.16),transparent 70%);transition:background .6s ease;}
+.hero-inner{position:relative;z-index:1;}
+.hero h1{font-size:clamp(38px,9vw,88px);line-height:1;margin:14px 0 8px;}
+.hero-role{font-family:'JetBrains Mono',monospace;font-size:clamp(13px,3vw,19px);color:var(--gold);height:1.6em;transition:color .4s ease;}
+.hero-role .cursor{display:inline-block;width:2px;background:var(--gold);margin-left:2px;animation:blink 1s steps(1) infinite;}
+@keyframes blink{50%{opacity:0;}}
+.hero-sub{max-width:540px;color:var(--muted);font-size:16px;margin-top:20px;}
+.dial{display:flex;flex-wrap:wrap;gap:9px;margin-top:36px;}
+.dial button{font:inherit;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.07em;padding:9px 15px;border:1px solid rgba(241,236,226,.18);border-radius:100px;color:var(--muted);background:none;cursor:pointer;transition:all .25s ease;}
+.dial button:hover{color:var(--paper);border-color:var(--c,var(--gold));background:color-mix(in srgb,var(--c,var(--gold)) 14%,transparent);}
+.hero-photo{margin-top:44px;border-radius:4px;overflow:hidden;border:1px solid rgba(241,236,226,.12);max-height:280px;}
+.hero-photo img{width:100%;height:100%;object-fit:cover;}
+
+/* SECTIONS */
+section{padding:70px 0;}
+.section-tight{padding:50px 0;}
+.section-head{margin-bottom:36px;max-width:620px;}
+.section-head h2{font-size:clamp(26px,5vw,40px);margin-top:8px;}
+
+.page-header{padding:56px 0 40px;border-bottom:1px solid rgba(241,236,226,.1);}
+.page-header h1{font-size:clamp(30px,7vw,54px);margin-top:10px;}
+.page-header .sub{color:var(--muted);max-width:560px;margin-top:14px;font-size:15px;}
+
+/* ABOUT-STYLE GRID */
+.about-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:start;}
+.about-grid p{color:var(--muted);font-size:15.5px;margin-bottom:14px;max-width:56ch;}
+.about-grid p strong{color:var(--paper);font-weight:600;}
+.stat-list{display:flex;flex-direction:column;gap:18px;}
+.stat{border-top:1px solid rgba(241,236,226,.12);padding-top:12px;}
+.stat .num{font-family:'Fraunces',serif;font-size:26px;color:var(--gold);}
+.stat .label{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
+@media (max-width:820px){.about-grid{grid-template-columns:1fr;}}
+
+.pic{border-radius:4px;overflow:hidden;border:1px solid rgba(241,236,226,.12);margin-bottom:14px;}
+.pic img{width:100%;height:200px;object-fit:cover;}
+
+/* CAPABILITIES */
+.cap-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:rgba(241,236,226,.12);border:1px solid rgba(241,236,226,.12);}
+.cap{background:var(--ink);display:flex;flex-direction:column;transition:background .3s ease;}
+.cap:hover{background:var(--surface);}
+.cap img{width:100%;height:110px;object-fit:cover;border-radius:0;}
+.cap-body{padding:18px;}
+.cap .tag{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.1em;color:var(--tc);}
+.cap h3{font-size:16.5px;margin:12px 0 8px;line-height:1.15;}
+.cap p{font-size:12.5px;color:var(--muted);}
+@media (max-width:900px){.cap-grid{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:520px){.cap-grid{grid-template-columns:1fr;}}
+
+.cap-detail{border:1px solid rgba(241,236,226,.12);border-left:3px solid var(--tc);background:var(--surface);margin-bottom:18px;display:grid;grid-template-columns:170px 1fr;}
+.cap-detail img{width:100%;height:100%;object-fit:cover;}
+.cap-detail-body{padding:24px;}
+.cap-detail h3{font-size:20px;margin:6px 0 10px;}
+.cap-detail p{color:var(--muted);font-size:14px;margin-bottom:8px;}
+.cap-detail ul{list-style:none;margin-top:10px;display:flex;flex-wrap:wrap;gap:7px;}
+.cap-detail li{font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:4px 10px;border:1px solid rgba(241,236,226,.18);border-radius:100px;color:var(--muted);}
+@media (max-width:600px){.cap-detail{grid-template-columns:1fr;}.cap-detail img{height:150px;}}
+
+/* WORK GRID */
+.work-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:rgba(241,236,226,.12);border:1px solid rgba(241,236,226,.12);}
+.work-card{background:var(--ink);display:flex;flex-direction:column;transition:background .3s ease;cursor:pointer;}
+.work-card:hover{background:var(--surface);}
+.work-card img{width:100%;height:150px;object-fit:cover;}
+.work-card-body{padding:22px;display:flex;flex-direction:column;flex:1;}
+.work-card .work-meta{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--cc,var(--muted));letter-spacing:.08em;text-transform:uppercase;}
+.work-card h3{font-size:20px;margin:10px 0 8px;}
+.work-card p{color:var(--muted);font-size:13.5px;flex:1;}
+.work-card .cta{margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--cc,var(--gold));border-bottom:1px solid var(--cc,var(--gold));width:fit-content;}
+.work-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;}
+.work-tags span{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 9px;border:1px solid rgba(241,236,226,.18);color:var(--muted);border-radius:100px;}
+@media (max-width:700px){.work-grid{grid-template-columns:1fr;}}
+
+/* PROJECT DETAIL */
+.project-hero{padding:50px 0 40px;border-bottom:1px solid rgba(241,236,226,.1);background:linear-gradient(180deg,color-mix(in srgb,var(--pc,var(--gold)) 10%,transparent),transparent 60%);}
+.project-hero .eyebrow{color:var(--pc,var(--gold));}
+.project-hero h1{font-size:clamp(28px,6vw,50px);margin:12px 0 14px;}
+.project-hero p.lead{color:var(--muted);max-width:60ch;font-size:15.5px;}
+.project-photo{margin:26px 0;border-radius:4px;overflow:hidden;border:1px solid rgba(241,236,226,.12);}
+.project-photo img{width:100%;max-height:340px;object-fit:cover;}
+.btn-row{display:flex;gap:14px;margin-top:26px;flex-wrap:wrap;}
+.btn{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.05em;padding:11px 20px;border-radius:100px;border:1px solid rgba(241,236,226,.25);transition:all .2s ease;}
+.btn-primary{background:var(--pc,var(--gold));color:var(--ink);border-color:transparent;}
+.btn-primary:hover{opacity:.85;}
+.btn-ghost{cursor:pointer;background:none;font:inherit;color:inherit;}
+.btn-ghost:hover{border-color:var(--pc,var(--gold));color:var(--pc,var(--gold));}
+.project-body{display:grid;grid-template-columns:1.4fr .9fr;gap:40px;padding:50px 0;}
+.project-body h2{font-size:21px;margin-bottom:14px;}
+.project-body p{color:var(--muted);margin-bottom:14px;max-width:64ch;font-size:14px;}
+.feature-list{list-style:none;margin-top:8px;}
+.feature-list li{padding:12px 0;border-top:1px solid rgba(241,236,226,.1);color:var(--muted);font-size:13.5px;display:flex;gap:10px;}
+.feature-list li::before{content:'—';color:var(--pc,var(--gold));flex-shrink:0;}
+.side-box{border:1px solid rgba(241,236,226,.14);padding:22px;background:var(--surface);height:fit-content;}
+.side-box .side-label{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px;}
+.side-box .side-label:first-child{margin-top:0;}
+.side-box .tagset{display:flex;flex-wrap:wrap;gap:7px;}
+.side-box .tagset span{font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:4px 10px;border:1px solid rgba(241,236,226,.2);border-radius:100px;}
+@media (max-width:800px){.project-body{grid-template-columns:1fr;}}
+
+.back-link{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;padding:0;margin-bottom:20px;}
+.back-link:hover{color:var(--paper);}
+
+/* TIMELINE */
+.timeline-item{display:grid;grid-template-columns:44px 1fr;gap:18px;padding:18px 0;border-top:1px solid rgba(241,236,226,.1);}
+.timeline-item .yr{font-family:'JetBrains Mono',monospace;color:var(--gold);font-size:12px;}
+.timeline-item h3{font-size:15.5px;margin-bottom:5px;}
+.timeline-item p{color:var(--muted);font-size:13px;}
+
+/* CONTACT */
+.contact-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;}
+.contact-grid h2{font-size:clamp(26px,6vw,42px);}
+.contact-links{margin-top:26px;display:flex;flex-direction:column;gap:13px;font-family:'JetBrains Mono',monospace;font-size:13px;}
+.contact-links a{border-bottom:1px solid var(--muted);padding-bottom:2px;width:fit-content;}
+.contact-links a:hover{border-color:var(--gold);color:var(--gold);}
+.contact-form{display:flex;flex-direction:column;gap:13px;}
+.contact-form input,.contact-form textarea{background:var(--surface);border:1px solid rgba(241,236,226,.16);color:var(--paper);padding:12px 14px;font-family:'Space Grotesk',sans-serif;font-size:13.5px;border-radius:2px;width:100%;}
+.contact-form textarea{min-height:100px;resize:vertical;}
+.contact-form button{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--gold);color:var(--ink);border:none;padding:12px 20px;border-radius:100px;width:fit-content;cursor:pointer;}
+@media (max-width:800px){.contact-grid{grid-template-columns:1fr;}}
+
+footer{padding:26px 0 40px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;border-top:1px solid rgba(241,236,226,.08);margin-top:30px;}
+
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important;}html{scroll-behavior:auto;}}
+a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:3px;}
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav">
+    <div class="nav-mark">Faizan Development</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">☰</button>
+  </nav>
+</header>
+
+<!-- ============ HOME ============ -->
+<section class="page" id="home">
+  <div class="hero">
+    <div class="hero-glow" id="heroGlow"></div>
+    <div class="wrap hero-inner">
+      <p class="eyebrow">Portfolio — est. 2026</p>
+      <h1>Faizan Development</h1>
+      <div class="hero-role" id="roleText" aria-live="polite"></div>
+      <p class="hero-sub">I move between code and craft — building the software and designing the face it wears. Live client sites, personal apps, and the visual identities that hold them together.</p>
+      <div class="dial">
+        <button style="--c:#4fa693" onclick="go('work')">WEB DEV</button>
+        <button style="--c:#d3a24a" onclick="go('work')">LOGO DESIGN</button>
+        <button style="--c:#c96b4f" onclick="go('work')">GRAPHIC DESIGN</button>
+        <button style="--c:#7d8fd0" onclick="go('work')">GAME DESIGN</button>
+        <button style="--c:#c07dc0" onclick="go('work')">APP DEV</button>
+      </div>
+      <div class="hero-photo">
+        <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1200&q=60" alt="Developer workspace with code on screen">
+      </div>
+    </div>
+  </div>
+
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="about-grid">
+        <div>
+          <p class="eyebrow">What I do</p>
+          <h2 style="margin:8px 0 16px;">Four live sites. Two personal builds. One practice.</h2>
+          <p>Every project on this site is something I actually shipped — a hospital's full booking site, a mobile-shop storefront with its own admin panel, a restaurant's brand-led site, a student productivity app, and two personal builds I'm still growing.</p>
+          <p><a href="#work" onclick="go('work')" style="color:var(--gold);border-bottom:1px solid var(--gold);">See the full body of work →</a></p>
+        </div>
+        <div class="stat-list">
+          <div class="stat"><div class="num">6</div><div class="label">Projects shipped &amp; in progress</div></div>
+          <div class="stat"><div class="num">5</div><div class="label">Disciplines — web, logo, graphic, game, app</div></div>
+          <div class="stat"><div class="num">2</div><div class="label">Real businesses running on sites I built</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Featured work</p>
+        <h2>A couple of things worth a closer look.</h2>
+      </div>
+      <div class="work-grid">
+        <div class="work-card" onclick="go('proj-lumen')" style="--cc:#4fa693">
+          <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=60" alt="Healthcare website concept">
+          <div class="work-card-body">
+            <p class="work-meta">Healthcare · Multi-page site</p>
+            <h3>Lumen Health Institute</h3>
+            <p>A full hospital site — doctor directory, department pages, health packages, and an appointment booking flow.</p>
+            <div class="cta">View case study →</div>
+          </div>
+        </div>
+        <div class="work-card" onclick="go('proj-mobilegallery')" style="--cc:#c96b4f">
+          <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=60" alt="Mobile phone store display">
+          <div class="work-card-body">
+            <p class="work-meta">E-commerce · Storefront + admin panel</p>
+            <h3>Mobile Gallery</h3>
+            <p>A real phone shop's storefront with catalog, UPI pre-orders, and a full self-serve admin dashboard.</p>
+            <div class="cta">View case study →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section class="page" id="about">
+  <div class="page-header wrap">
+    <p class="eyebrow">About</p>
+    <h1>One person, the whole build — code and the face it wears.</h1>
+    <p class="sub">Every project on this site — the hospital site, the shop, the restaurant, the apps — was designed and built end to end by one person: architecture, interface, and identity.</p>
+  </div>
+
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="about-grid">
+        <div>
+          <div class="pic"><img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=60" alt="Developer working on a laptop"></div>
+          <p class="eyebrow">Bio</p>
+          <h2 style="margin:8px 0 16px;">Replace this with your real story.</h2>
+          <p>Write 2–3 short paragraphs here: how you got into development and design, what kind of projects you gravitate toward, and what you're working on right now. Keep it in your own voice — specific beats general.</p>
+          <p>Mention the real businesses you've built for — <strong>Mobile Gallery</strong> and <strong>Shahi Darbar</strong> are both real, live projects, which is a strong thing to lead with.</p>
+          <p>Close with what you're building now — <strong>Flora AI</strong>, your personal music app — and what kind of next project you're looking for.</p>
+        </div>
+        <div class="stat-list">
+          <div class="stat"><div class="num">2</div><div class="label">Real local businesses running on your sites</div></div>
+          <div class="stat"><div class="num">4</div><div class="label">Live, deployed projects</div></div>
+          <div class="stat"><div class="num">5</div><div class="label">Disciplines you work across</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">How I work</p>
+        <h2>From brief to shipped build.</h2>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item"><div class="yr">01</div><div><h3>Understand the real need</h3><p>For Mobile Gallery and Shahi Darbar, that meant sitting with what the shop and restaurant actually needed customers to do — browse, order, book, call.</p></div></div>
+        <div class="timeline-item"><div class="yr">02</div><div><h3>Design the identity</h3><p>Layout, type, and color built around the business itself — a royal, editorial feel for a banquet hall reads nothing like a fast, catalog-first phone shop.</p></div></div>
+        <div class="timeline-item"><div class="yr">03</div><div><h3>Build it properly</h3><p>Multi-page structure where the content calls for it, admin tooling where the owner needs to update things themselves, and a clean deploy.</p></div></div>
+        <div class="timeline-item"><div class="yr">04</div><div><h3>Hand it off &amp; support it</h3><p>Ship it live, make sure the owner can actually run it day to day, and stay reachable for the fixes and additions that come after launch.</p></div></div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ============ SKILLS ============ -->
+<section class="page" id="skills">
+  <div class="page-header wrap">
+    <p class="eyebrow">Skills</p>
+    <h1>Five disciplines, one practice.</h1>
+    <p class="sub">Each one shows up somewhere in the live work — the storefront, the hospital site, the restaurant brand, the apps.</p>
+  </div>
+  <section class="section-tight">
+    <div class="wrap">
+
+      <div class="cap-detail" style="--tc:#4fa693">
+        <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=500&q=60" alt="Code on a screen">
+        <div class="cap-detail-body">
+          <span class="tag">01 · WEB DEVELOPMENT</span>
+          <h3>Full multi-page builds, not just landing pages</h3>
+          <p>Structuring real information architecture — department pages, product catalogs, booking flows — and wiring the front end so it holds together across a dozen pages.</p>
+          <p>Shown in: Lumen Health Institute's full hospital site and Shahi Darbar's multi-page hospitality build.</p>
+          <ul><li>HTML / CSS / JavaScript</li><li>Responsive layout</li><li>Multi-page architecture</li><li>Netlify &amp; GitHub Pages deploys</li></ul>
+        </div>
+      </div>
+
+      <div class="cap-detail" style="--tc:#c96b4f">
+        <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=500&q=60" alt="Building a web app on a laptop">
+        <div class="cap-detail-body">
+          <span class="tag">02 · APP-LIKE WEB TOOLS</span>
+          <h3>Client-side apps that don't need a server</h3>
+          <p>Building genuine tools inside the browser — local storage, live UI state, timers, forms — for cases where a full backend would be overkill.</p>
+          <p>Shown in: StudentHub's to-do list, notes, and Pomodoro timer, and Mobile Gallery's admin panel.</p>
+          <ul><li>Vanilla JS state management</li><li>localStorage persistence</li><li>Admin dashboards</li><li>Form &amp; payment flows</li></ul>
+        </div>
+      </div>
+
+      <div class="cap-detail" style="--tc:#d3a24a">
+        <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=500&q=60" alt="Logo and brand sketches">
+        <div class="cap-detail-body">
+          <span class="tag">03 · LOGO DESIGN</span>
+          <h3>Marks built to hold up small and large</h3>
+          <p>A logo has to work at favicon size and on a storefront sign. This is where a real logo project of yours belongs — add the brief, the concept, and the final mark.</p>
+          <ul><li>Add your tools (Illustrator / Figma / etc.)</li><li>Vector-first workflow</li><li>Brand marks &amp; wordmarks</li></ul>
+        </div>
+      </div>
+
+      <div class="cap-detail" style="--tc:#7d8fd0">
+        <img src="https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?auto=format&fit=crop&w=500&q=60" alt="Graphic design layout and color swatches">
+        <div class="cap-detail-body">
+          <span class="tag">04 · GRAPHIC DESIGN</span>
+          <h3>Visual systems that give a brand its face</h3>
+          <p>Shahi Darbar's royal, marble-and-gold visual identity and Mobile Gallery's fast, catalog-first look are both graphic design decisions before they're code — palette, type, and imagery chosen for who's reading it.</p>
+          <ul><li>Type &amp; color systems</li><li>Brand-led layout</li><li>Photography direction</li></ul>
+        </div>
+      </div>
+
+      <div class="cap-detail" style="--tc:#c07dc0">
+        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=500&q=60" alt="Game controller and screen">
+        <div class="cap-detail-body">
+          <span class="tag">05 · GAME &amp; APP DEVELOPMENT</span>
+          <h3>Cross-platform builds beyond the browser</h3>
+          <p>Currently building a Flutter Android music app and Flora AI, a cross-platform assistant. Add a real game project here — engine, your role, and a clip or screenshots — once you have one to show.</p>
+          <ul><li>Flutter</li><li>Firebase</li><li>Cross-platform architecture</li></ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</section>
+
+<!-- ============ WORK ============ -->
+<section class="page" id="work">
+  <div class="page-header wrap">
+    <p class="eyebrow">Work</p>
+    <h1>Six projects. Four of them live right now.</h1>
+    <p class="sub">Tap any project for the full case study — what it does, how it's built, and a link to the live site.</p>
+  </div>
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="work-grid">
+
+        <div class="work-card" onclick="go('proj-lumen')" style="--cc:#4fa693">
+          <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=60" alt="Healthcare website concept">
+          <div class="work-card-body">
+            <p class="work-meta">Healthcare · Live site</p>
+            <h3>Lumen Health Institute</h3>
+            <p>A full multi-page hospital site — doctors, departments, health packages, and a booking flow.</p>
+            <div class="work-tags"><span>Multi-page</span><span>Booking UI</span><span>Netlify</span></div>
+            <div class="cta">Case study →</div>
+          </div>
+        </div>
+
+        <div class="work-card" onclick="go('proj-mobilegallery')" style="--cc:#c96b4f">
+          <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=60" alt="Mobile phone store display">
+          <div class="work-card-body">
+            <p class="work-meta">E-commerce · Live client site</p>
+            <h3>Mobile Gallery</h3>
+            <p>A real phone shop in Bihar — catalog, UPI pre-orders, customer accounts, and a full admin panel.</p>
+            <div class="work-tags"><span>Admin panel</span><span>Payments</span><span>GitHub Pages</span></div>
+            <div class="cta">Case study →</div>
+          </div>
+        </div>
+
+        <div class="work-card" onclick="go('proj-shahidarbar')" style="--cc:#d3a24a">
+          <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=60" alt="Restaurant fine dining table">
+          <div class="work-card-body">
+            <p class="work-meta">Hospitality · Live client site</p>
+            <h3>Shahi Darbar</h3>
+            <p>A multi-cuisine restaurant, hotel, and marriage hall — heritage story, menu, gallery, and reviews.</p>
+            <div class="work-tags"><span>Brand identity</span><span>Multi-page</span><span>GitHub Pages</span></div>
+            <div class="cta">Case study →</div>
+          </div>
+        </div>
+
+        <div class="work-card" onclick="go('proj-studenthub')" style="--cc:#7d8fd0">
+          <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=800&q=60" alt="Student studying with notes and laptop">
+          <div class="work-card-body">
+            <p class="work-meta">Productivity · Live site</p>
+            <h3>StudentHub</h3>
+            <p>A to-do list, notes, and Pomodoro timer in one page — no login, no server, pure front end.</p>
+            <div class="work-tags"><span>Vanilla JS</span><span>localStorage</span><span>Netlify</span></div>
+            <div class="cta">Case study →</div>
+          </div>
+        </div>
+
+        <div class="work-card" style="--cc:#c07dc0">
+          <img src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=800&q=60" alt="Voice assistant and smart speaker concept">
+          <div class="work-card-body">
+            <p class="work-meta">Personal project · In progress</p>
+            <h3>Flora AI</h3>
+            <p>A cross-platform AI assistant with voice, memory, smart-home control, and a plugin system.</p>
+            <div class="work-tags"><span>Cross-platform</span><span>Voice</span><span>Plugin system</span></div>
+          </div>
+        </div>
+
+        <div class="work-card" style="--cc:#4fa693">
+          <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=60" alt="Music streaming app on a phone">
+          <div class="work-card-body">
+            <p class="work-meta">Personal project · Flutter / Firebase</p>
+            <h3>Music App</h3>
+            <p>A personal Android music app — upload your own tracks, stream them, or download for offline listening.</p>
+            <div class="work-tags"><span>Flutter</span><span>Firebase</span><span>Offline playback</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ============ PROJECT: LUMEN ============ -->
+<section class="page" id="proj-lumen" style="--pc:#4fa693">
+  <div class="project-hero wrap">
+    <button class="back-link" onclick="go('work')">← Back to all work</button>
+    <p class="eyebrow">Healthcare · Multi-page web site</p>
+    <h1>Lumen Health Institute</h1>
+    <p class="lead">A complete hospital and quaternary-care institute site — built as real information architecture, not a single landing page. Doctor directory, ten departments, health checkup packages, and an appointment flow, all tied together.</p>
+    <div class="project-photo"><img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=60" alt="Healthcare website concept"></div>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="https://heroic-granita-d915f6.netlify.app/" target="_blank" rel="noopener">Visit live site ↗</a>
+      <button class="btn btn-ghost" onclick="go('work')">← Back to all work</button>
+    </div>
+  </div>
+  <div class="wrap project-body">
+    <div>
+      <h2>Overview</h2>
+      <p>Lumen Health needed a site that could hold the actual scale of a hospital: dozens of doctors, ten clinical departments, diagnostic packages, a blog, and a patient portal — while still opening with a hero that felt calm and human rather than corporate.</p>
+      <p>The build leans on a clear navigation structure and repeatable page templates, so adding a new doctor or department doesn't mean redesigning a page from scratch.</p>
+      <h2 style="margin-top:26px;">Key features</h2>
+      <ul class="feature-list">
+        <li>Ten department pages — cardiology, neurology, oncology, orthopedics, pediatrics, and more</li>
+        <li>Doctor directory with specialty, credentials, and same-day availability</li>
+        <li>Appointment booking flow and a dedicated 24/7 emergency page</li>
+        <li>Health checkup packages with pricing and what's included</li>
+        <li>Patient portal, health blog, and full facility gallery</li>
+        <li>Patient testimonials and clear contact / emergency contact info</li>
+      </ul>
+    </div>
+    <div class="side-box">
+      <div class="side-label">Role</div><p style="color:var(--muted);font-size:13px;">Design &amp; front-end build (edit to match reality)</p>
+      <div class="side-label">Built with</div><div class="tagset"><span>HTML/CSS/JS</span><span>Responsive</span><span>Multi-page</span></div>
+      <div class="side-label">Hosting</div><div class="tagset"><span>Netlify</span></div>
+      <div class="side-label">Live URL</div><p style="font-size:12.5px;word-break:break-all;"><a href="https://heroic-granita-d915f6.netlify.app/" target="_blank" rel="noopener" style="color:#4fa693;">heroic-granita-d915f6.netlify.app</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROJECT: MOBILE GALLERY ============ -->
+<section class="page" id="proj-mobilegallery" style="--pc:#c96b4f">
+  <div class="project-hero wrap">
+    <button class="back-link" onclick="go('work')">← Back to all work</button>
+    <p class="eyebrow">E-commerce · Storefront + admin panel</p>
+    <h1>Mobile Gallery</h1>
+    <p class="lead">A real mobile phone shop in Simrahi Bazar, Bihar, needed a storefront and a way to run it themselves. This is a full retail site — product catalog, pre-orders with UPI payment, customer reviews — paired with a self-serve admin panel.</p>
+    <div class="project-photo"><img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=60" alt="Mobile phone store display"></div>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="https://sortendgamer-ui.github.io/Mobilegallery/#home" target="_blank" rel="noopener">Visit live site ↗</a>
+      <button class="btn btn-ghost" onclick="go('work')">← Back to all work</button>
+    </div>
+  </div>
+  <div class="wrap project-body">
+    <div>
+      <h2>Overview</h2>
+      <p>The brief was a working store, not just a brochure: customers needed to browse phones and accessories by brand, place a pre-order and pay a deposit through UPI, and leave reviews — while the shop owner needed to manage every bit of it without touching code.</p>
+      <p>That split shaped the build: a public storefront focused on speed and trust signals, and a locked admin panel behind login that mirrors every editable piece of the public site.</p>
+      <h2 style="margin-top:26px;">Key features</h2>
+      <ul class="feature-list">
+        <li>Phone &amp; accessory catalog with brand filters and product photos</li>
+        <li>Pre-order flow with UPI QR code payment, paid directly to the owner's account</li>
+        <li>Customer accounts, order history, and a review system</li>
+        <li>Full admin dashboard — add/edit phones, brands, gadgets, events, and gallery photos</li>
+        <li>Editable hero section and store info, so the owner controls the homepage copy</li>
+        <li>WhatsApp and call-to-store contact built into every product page</li>
+      </ul>
+    </div>
+    <div class="side-box">
+      <div class="side-label">Role</div><p style="color:var(--muted);font-size:13px;">Design, front-end &amp; admin panel build (edit to match reality)</p>
+      <div class="side-label">Built with</div><div class="tagset"><span>HTML/CSS/JS</span><span>Admin dashboard</span><span>UPI payment flow</span></div>
+      <div class="side-label">Hosting</div><div class="tagset"><span>GitHub Pages</span></div>
+      <div class="side-label">Live URL</div><p style="font-size:12.5px;word-break:break-all;"><a href="https://sortendgamer-ui.github.io/Mobilegallery/#home" target="_blank" rel="noopener" style="color:#c96b4f;">sortendgamer-ui.github.io/Mobilegallery</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROJECT: SHAHI DARBAR ============ -->
+<section class="page" id="proj-shahidarbar" style="--pc:#d3a24a">
+  <div class="project-hero wrap">
+    <button class="back-link" onclick="go('work')">← Back to all work</button>
+    <p class="eyebrow">Hospitality · Brand-led multi-page site</p>
+    <h1>Shahi Darbar</h1>
+    <p class="lead">A multi-cuisine restaurant, hotel, and marriage hall on NH27 needed a site that felt as premium as the venue itself — a royal, marble-and-gold visual identity, real photography, a heritage story, and a full menu.</p>
+    <div class="project-photo"><img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=60" alt="Restaurant fine dining table"></div>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="https://sortendgamer-ui.github.io/Shahidarbar-/" target="_blank" rel="noopener">Visit live site ↗</a>
+      <button class="btn btn-ghost" onclick="go('work')">← Back to all work</button>
+    </div>
+  </div>
+  <div class="wrap project-body">
+    <div>
+      <h2>Overview</h2>
+      <p>Shahi Darbar is three businesses in one — a multi-cuisine restaurant, a hotel, and a marriage hall that hosts weddings for up to 500 guests. The site is organized around "three ways to be welcomed": fine dining, the hotel, and banquets — each with its own moment on the page.</p>
+      <p>Real interior and facade photography carries most of the persuasion, paired with a heritage narrative and a signature menu built from the restaurant's actual dishes.</p>
+      <h2 style="margin-top:26px;">Key features</h2>
+      <ul class="feature-list">
+        <li>Heritage story section establishing the restaurant, hotel, and banquet hall as one landmark</li>
+        <li>Signature menu across three cuisines, pulled from the real kitchen</li>
+        <li>Dedicated photo gallery and guest-reviews pages</li>
+        <li>Marriage hall / banquet section built to sell wedding bookings specifically</li>
+        <li>Map embed, call, WhatsApp, and social links in the contact section</li>
+        <li>Admin login page for the owner to manage site content</li>
+      </ul>
+    </div>
+    <div class="side-box">
+      <div class="side-label">Role</div><p style="color:var(--muted);font-size:13px;">Brand identity, copy &amp; front-end build (edit to match reality)</p>
+      <div class="side-label">Built with</div><div class="tagset"><span>HTML/CSS/JS</span><span>Multi-page</span><span>Custom photography</span></div>
+      <div class="side-label">Hosting</div><div class="tagset"><span>GitHub Pages</span></div>
+      <div class="side-label">Live URL</div><p style="font-size:12.5px;word-break:break-all;"><a href="https://sortendgamer-ui.github.io/Shahidarbar-/" target="_blank" rel="noopener" style="color:#d3a24a;">sortendgamer-ui.github.io/Shahidarbar-</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROJECT: STUDENTHUB ============ -->
+<section class="page" id="proj-studenthub" style="--pc:#7d8fd0">
+  <div class="project-hero wrap">
+    <button class="back-link" onclick="go('work')">← Back to all work</button>
+    <p class="eyebrow">Productivity · Client-side web app</p>
+    <h1>StudentHub</h1>
+    <p class="lead">A student productivity toolkit that proves a small, well-designed feature set beats a bloated one: a to-do list, a notes pad, and a Pomodoro study timer, in one calm page with zero sign-up.</p>
+    <div class="project-photo"><img src="https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=1200&q=60" alt="Student studying with notes and laptop"></div>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="https://astonishing-medovik-e93bd8.netlify.app/" target="_blank" rel="noopener">Visit live site ↗</a>
+      <button class="btn btn-ghost" onclick="go('work')">← Back to all work</button>
+    </div>
+  </div>
+  <div class="wrap project-body">
+    <div>
+      <h2>Overview</h2>
+      <p>StudentHub is deliberately small. The goal wasn't another all-in-one student app with logins and social features — it was to see how far three focused tools could go on their own, with everything saved locally in the browser.</p>
+      <p>No frameworks, no dependencies — just HTML, CSS, and JavaScript, which kept the whole thing fast and easy to reason about.</p>
+      <h2 style="margin-top:26px;">Key features</h2>
+      <ul class="feature-list">
+        <li>To-do list with auto-save, task counts, and clear-completed</li>
+        <li>Quick notes pad for lecture thoughts and reminders</li>
+        <li>Pomodoro-style study timer — 25-minute focus, 5-minute short break, 15-minute long break</li>
+        <li>Curated study resources list — notes templates, open textbooks, tutorials</li>
+        <li>Dark mode toggle and a distraction-free single-page layout</li>
+        <li>All data stored locally via localStorage — no account required</li>
+      </ul>
+    </div>
+    <div class="side-box">
+      <div class="side-label">Role</div><p style="color:var(--muted);font-size:13px;">Design &amp; front-end build (edit to match reality)</p>
+      <div class="side-label">Built with</div><div class="tagset"><span>Vanilla HTML/CSS/JS</span><span>localStorage</span></div>
+      <div class="side-label">Hosting</div><div class="tagset"><span>Netlify</span></div>
+      <div class="side-label">Live URL</div><p style="font-size:12.5px;word-break:break-all;"><a href="https://astonishing-medovik-e93bd8.netlify.app/" target="_blank" rel="noopener" style="color:#7d8fd0;">astonishing-medovik-e93bd8.netlify.app</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="page" id="contact">
+  <div class="page-header wrap">
+    <p class="eyebrow">Contact</p>
+    <h1>Have something to build?</h1>
+    <p class="sub">Web app, storefront, brand identity, or something in between — tell me about it.</p>
+  </div>
+  <section class="section-tight">
+    <div class="wrap contact-grid">
+      <div>
+        <h2>Let's talk it through.</h2>
+        <p style="color:var(--muted);margin-top:12px;max-width:48ch;font-size:14px;">The fastest way to reach me is email or WhatsApp. I usually reply within a day.</p>
+        <div class="contact-links">
+          <a href="mailto:you@example.com">you@example.com</a>
+          <a href="#">WhatsApp</a>
+          <a href="#">GitHub</a>
+          <a href="#">LinkedIn</a>
+          <a href="#">Dribbble</a>
+        </div>
+      </div>
+      <form class="contact-form" id="contactForm">
+        <input type="text" name="name" placeholder="Your name" required>
+        <input type="email" name="email" placeholder="Your email" required>
+        <textarea name="message" placeholder="What are you building?" required></textarea>
+        <button type="submit">Send message</button>
+        <p id="formStatus" style="color:var(--muted);font-size:12.5px;"></p>
+      </form>
+    </div>
+  </section>
+</section>
+
+<footer class="wrap">
+  <span>© 2026 Faizan Development</span>
+  <span>Built solo — code, design, and everything between</span>
+</footer>
+
+<script>
+// ---- Page routing (single-file, page-style navigation) ----
+const pageIds = ['home','about','skills','work','contact','proj-lumen','proj-mobilegallery','proj-shahidarbar','proj-studenthub'];
+function route(){
+  let hash = location.hash.replace('#','') || 'home';
+  if(!pageIds.includes(hash)) hash = 'home';
+  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active', p.id===hash));
+  const navTarget = hash.startsWith('proj-') ? 'work' : hash;
+  document.querySelectorAll('.nav-links a').forEach(a=>{
+    a.classList.toggle('active', a.getAttribute('href') === '#'+navTarget);
+  });
+  window.scrollTo(0,0);
+  document.getElementById('navLinks').classList.remove('open');
+}
+function go(id){ location.hash = id; }
+window.addEventListener('hashchange', route);
+window.addEventListener('DOMContentLoaded', route);
+
+// ---- Mobile nav toggle ----
+const toggle = document.getElementById('navToggle');
+const links = document.getElementById('navLinks');
+toggle.addEventListener('click', ()=>{
+  links.classList.toggle('open');
+  toggle.textContent = links.classList.contains('open') ? '✕' : '☰';
+});
+
+// ---- Hero rotating role text ----
+const roleEl = document.getElementById('roleText');
+const glowEl = document.getElementById('heroGlow');
+const roles = ["Web Developer","Logo Designer","Graphic Designer","Game Designer","App Developer"];
+const roleColors = ["#4fa693","#d3a24a","#c96b4f","#7d8fd0","#c07dc0"];
+let ri=0, ci=0, deleting=false;
+function typeLoop(){
+  const word = roles[ri];
+  if(!deleting){
+    ci++;
+    roleEl.innerHTML = word.slice(0,ci) + '<span class="cursor">&nbsp;</span>';
+    if(ci===word.length){ deleting=true; setTimeout(typeLoop,1300); return; }
+  } else {
+    ci--;
+    roleEl.innerHTML = word.slice(0,ci) + '<span class="cursor">&nbsp;</span>';
+    if(ci===0){
+      deleting=false; ri=(ri+1)%roles.length;
+      roleEl.style.color = roleColors[ri];
+      glowEl.style.background = `radial-gradient(600px 400px at 15% 20%, color-mix(in srgb, ${roleColors[ri]} 16%, transparent), transparent 70%)`;
+    }
+  }
+  setTimeout(typeLoop, deleting?45:85);
+}
+roleEl.style.color = roleColors[0];
+typeLoop();
+
+// ---- Contact form (static demo) ----
+document.getElementById('contactForm').addEventListener('submit', (e)=>{
+  e.preventDefault();
+  document.getElementById('formStatus').textContent = "This form isn't wired to a server yet — email me directly for now.";
+});
+</script>
+</body>
+</html>
