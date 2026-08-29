@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Faizan Development — Web, App &amp; Design</title>
 <meta name="description" content="Faizan Development — web development, app development, logo design, graphic design and game design. Live client sites and personal builds, all designed and developed end to end.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2315111c'/%3E%3Ctext x='50' y='68' font-family='Georgia,serif' font-size='58' font-weight='700' fill='%23d3a24a' text-anchor='middle'%3EF%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231c1624'/%3E%3Crect x='25' y='20' width='15' height='60' rx='4' fill='%23d3a24a'/%3E%3Crect x='40' y='20' width='38' height='15' rx='4' fill='%23d3a24a'/%3E%3Crect x='40' y='45' width='26' height='15' rx='4' fill='%23c96b4f'/%3E%3Ccircle cx='78' cy='78' r='9' fill='%234fa693'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -28,17 +28,34 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;letter-spacing:-.01em;}
 header{position:sticky;top:0;left:0;right:0;z-index:200;background:#15111c;backdrop-filter:blur(10px);border-bottom:1px solid rgba(241,236,226,.08);padding-top:env(safe-area-inset-top);width:100%;}
 .nav{max-width:1100px;margin:0 auto;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;min-height:34px;position:relative;}
 .nav-mark{font-family:'Fraunces',serif;font-weight:600;font-size:16px;line-height:1.5;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:9px;}
-.brand-mark{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:6px;background:linear-gradient(145deg,var(--gold),#a97c2f);color:var(--ink);font-family:'Fraunces',serif;font-weight:700;font-size:14px;flex-shrink:0;}
+.brand-mark{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;flex-shrink:0;}
+.brand-mark svg{width:100%;height:100%;display:block;}
 .nav-links{display:flex;gap:24px;list-style:none;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;margin:0;}
 .nav-links a{color:var(--muted);transition:color .2s ease;padding-bottom:2px;border-bottom:1px solid transparent;line-height:1.4;}
-.nav-links a:hover,.nav-links a.active{color:var(--paper);border-color:var(--gold);}
-.nav-toggle{display:none;background:none;border:1px solid rgba(241,236,226,.25);color:var(--paper);width:36px;height:36px;line-height:1;flex-shrink:0;border-radius:4px;font-size:16px;}
+@media (min-width:801px){
+  .nav-links a:hover,.nav-links a.active{color:var(--paper);border-color:var(--gold);}
+}
+.nav-toggle{display:none;background:none;border:1px solid rgba(241,236,226,.25);color:var(--paper);width:36px;height:36px;line-height:1;flex-shrink:0;border-radius:4px;font-size:16px;cursor:pointer;}
 @media (max-width:800px){
   .nav{flex-wrap:nowrap;}
-  .nav-links{position:absolute;top:100%;left:0;right:0;background:#15111c;flex-direction:column;gap:0;padding:6px 20px 16px;max-height:0;overflow:hidden;transition:max-height .3s ease;border-bottom:1px solid rgba(241,236,226,.08);}
-  .nav-links.open{max-height:400px;overflow-y:auto;}
-  .nav-links li{padding:14px 0;border-bottom:1px solid rgba(241,236,226,.08);font-size:13px;}
+  .nav-links{
+    position:absolute;top:calc(100% + 1px);left:0;right:0;z-index:250;
+    background:#1b1622;flex-direction:column;gap:0;padding:0 8px;
+    max-height:0;overflow:hidden;opacity:0;
+    transition:max-height .3s ease, opacity .25s ease;
+    border-bottom:1px solid rgba(241,236,226,.1);
+    box-shadow:0 18px 30px -12px rgba(0,0,0,.6);
+  }
+  .nav-links.open{max-height:70vh;overflow-y:auto;opacity:1;padding:8px 8px 14px;}
+  .nav-links li{border-bottom:1px solid rgba(241,236,226,.07);}
+  .nav-links li:last-child{border-bottom:none;}
+  .nav-links a{
+    display:block;width:100%;padding:15px 10px;font-size:13px;
+    border-bottom:none;border-radius:6px;border-left:3px solid transparent;
+  }
+  .nav-links a.active{color:var(--gold);background:rgba(211,162,74,.08);border-left-color:var(--gold);}
   .nav-toggle{display:block;}
+  .nav-toggle[aria-expanded="true"]{border-color:var(--gold);color:var(--gold);}
 }
 
 /* PAGES */
@@ -68,8 +85,8 @@ section{padding:70px 0;}
 .section-head{margin-bottom:36px;max-width:620px;}
 .section-head h2{font-size:clamp(26px,5vw,40px);margin-top:8px;}
 
-.page-header{padding:36px 0 30px;border-bottom:1px solid rgba(241,236,226,.1);}
-@media (min-width:700px){.page-header{padding:56px 0 40px;}}
+.page-header{padding-top:36px;padding-bottom:30px;border-bottom:1px solid rgba(241,236,226,.1);}
+@media (min-width:700px){.page-header{padding-top:56px;padding-bottom:40px;}}
 .page-header h1{font-size:clamp(30px,7vw,54px);margin-top:10px;}
 .page-header .sub{color:var(--muted);max-width:560px;margin-top:14px;font-size:15px;}
 
@@ -131,6 +148,8 @@ section{padding:70px 0;}
 .design-card{border-radius:6px;overflow:hidden;border:1px solid rgba(241,236,226,.12);background:var(--surface);transition:transform .25s ease, box-shadow .25s ease;}
 .design-card:hover{transform:translateY(-4px);box-shadow:0 16px 32px -14px rgba(0,0,0,.55);}
 .design-card img{width:100%;height:150px;object-fit:cover;}
+.logo-live-display{width:100%;height:150px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 30%, #2b2237, #15111c);}
+.logo-live-card{border-color:rgba(211,162,74,.4);}
 .design-card .cap{padding:12px 14px;}
 .design-card .cap .dtag{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dc,var(--gold));}
 .design-card .cap h4{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;margin-top:5px;color:var(--paper);}
@@ -139,7 +158,7 @@ section{padding:70px 0;}
 @media (max-width:480px){.design-grid{grid-template-columns:1fr;}}
 
 /* PROJECT DETAIL */
-.project-hero{padding:50px 0 40px;border-bottom:1px solid rgba(241,236,226,.1);background:linear-gradient(180deg,color-mix(in srgb,var(--pc,var(--gold)) 10%,transparent),transparent 60%);}
+.project-hero{padding-top:50px;padding-bottom:40px;border-bottom:1px solid rgba(241,236,226,.1);background:linear-gradient(180deg,color-mix(in srgb,var(--pc,var(--gold)) 10%,transparent),transparent 60%);}
 .project-hero .eyebrow{color:var(--pc,var(--gold));}
 .project-hero h1{font-size:clamp(28px,6vw,50px);margin:12px 0 14px;}
 .project-hero p.lead{color:var(--muted);max-width:60ch;font-size:15.5px;}
@@ -180,6 +199,7 @@ section{padding:70px 0;}
 .contact-links{margin-top:26px;display:flex;flex-direction:column;gap:13px;font-family:'JetBrains Mono',monospace;font-size:13px;}
 .contact-links a{border-bottom:1px solid var(--muted);padding-bottom:2px;width:fit-content;}
 .contact-links a:hover{border-color:var(--gold);color:var(--gold);}
+.contact-links a.muted-link{border-bottom-style:dashed;opacity:.6;}
 .contact-form{display:flex;flex-direction:column;gap:13px;}
 .contact-form input,.contact-form textarea{background:var(--surface);border:1px solid rgba(241,236,226,.16);color:var(--paper);padding:12px 14px;font-family:'Space Grotesk',sans-serif;font-size:13.5px;border-radius:2px;width:100%;}
 .contact-form textarea{min-height:100px;resize:vertical;}
@@ -187,6 +207,51 @@ section{padding:70px 0;}
 @media (max-width:800px){.contact-grid{grid-template-columns:1fr;}}
 
 footer{padding:26px 0 40px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;border-top:1px solid rgba(241,236,226,.08);margin-top:30px;}
+
+/* ---- Entrance animations (retrigger automatically each time a .page goes display:none -> block) ---- */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+.page.active .hero-inner > *{animation:fadeInUp .7s ease both;}
+.page.active .hero-inner .eyebrow{animation-delay:0s;}
+.page.active .hero-inner h1{animation-delay:.05s;}
+.page.active .hero-inner .hero-role{animation-delay:.12s;}
+.page.active .hero-inner .hero-sub{animation-delay:.18s;}
+.page.active .hero-inner .dial{animation-delay:.24s;}
+.page.active .hero-inner .hero-photo{animation-delay:.3s;}
+
+.page.active .page-header > *{animation:fadeInUp .6s ease both;}
+.page.active .page-header .eyebrow{animation-delay:0s;}
+.page.active .page-header h1{animation-delay:.06s;}
+.page.active .page-header .sub{animation-delay:.12s;}
+
+.page.active .project-hero > *{animation:fadeInUp .6s ease both;}
+.page.active .project-photo{animation:fadeIn .8s ease both;animation-delay:.15s;}
+
+.page.active .cap-grid .cap,
+.page.active .work-grid .work-card,
+.page.active .design-grid .design-card,
+.page.active .cap-detail,
+.page.active .timeline-item{
+  animation:fadeInUp .55s ease both;
+}
+.page.active .cap-grid .cap:nth-child(1),.page.active .work-grid .work-card:nth-child(1),.page.active .design-grid .design-card:nth-child(1),.page.active .cap-detail:nth-child(1),.page.active .timeline-item:nth-child(1){animation-delay:.05s;}
+.page.active .cap-grid .cap:nth-child(2),.page.active .work-grid .work-card:nth-child(2),.page.active .design-grid .design-card:nth-child(2),.page.active .cap-detail:nth-child(2),.page.active .timeline-item:nth-child(2){animation-delay:.11s;}
+.page.active .cap-grid .cap:nth-child(3),.page.active .work-grid .work-card:nth-child(3),.page.active .design-grid .design-card:nth-child(3),.page.active .cap-detail:nth-child(3),.page.active .timeline-item:nth-child(3){animation-delay:.17s;}
+.page.active .cap-grid .cap:nth-child(4),.page.active .work-grid .work-card:nth-child(4),.page.active .design-grid .design-card:nth-child(4),.page.active .cap-detail:nth-child(4),.page.active .timeline-item:nth-child(4){animation-delay:.23s;}
+.page.active .cap-grid .cap:nth-child(5),.page.active .work-grid .work-card:nth-child(5),.page.active .design-grid .design-card:nth-child(5),.page.active .cap-detail:nth-child(5){animation-delay:.29s;}
+.page.active .cap-grid .cap:nth-child(6),.page.active .work-grid .work-card:nth-child(6),.page.active .design-grid .design-card:nth-child(6){animation-delay:.35s;}
+
+.page.active .about-grid,.page.active .contact-grid,.page.active .project-body{animation:fadeInUp .6s ease both;animation-delay:.08s;}
+
+@media (min-width:801px){
+  .nav-links a{position:relative;}
+  .nav-links a::after{content:'';position:absolute;left:0;bottom:-2px;width:0;height:1px;background:var(--gold);transition:width .25s ease;}
+  .nav-links a:hover::after,.nav-links a.active::after{width:100%;}
+}
+
+.brand-mark svg{transition:transform .3s ease;}
+.nav-mark:hover .brand-mark svg{transform:rotate(-8deg) scale(1.08);}
 
 @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important;}html{scroll-behavior:auto;}}
 a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:3px;}
@@ -197,7 +262,14 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
 <header>
   <nav class="nav">
     <div class="nav-mark">
-      <span class="brand-mark" aria-hidden="true">F</span>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 40 40"><defs><linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#d3a24a"/><stop offset="100%" stop-color="#c96b4f"/></linearGradient></defs>
+        <rect width="40" height="40" rx="9" fill="#1c1624"/>
+        <rect x="10" y="8" width="6" height="24" rx="1.6" fill="url(#lg1)"/>
+        <rect x="16" y="8" width="15" height="6" rx="1.6" fill="url(#lg1)"/>
+        <rect x="16" y="18" width="10" height="6" rx="1.6" fill="url(#lg1)" opacity="0.85"/>
+        <circle cx="30.5" cy="30.5" r="3.2" fill="#4fa693"/></svg>
+      </span>
       <span>Faizan Development</span>
     </div>
     <ul class="nav-links" id="navLinks">
@@ -479,6 +551,17 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
         <p>Sample concept work showing the kind of logo exploration and brand-mark thinking I do — swap these for your own finished client logos when you have them ready.</p>
       </div>
       <div class="design-grid">
+        <div class="design-card logo-live-card">
+          <div class="logo-live-display">
+            <svg viewBox="0 0 40 40" width="56" height="56"><defs><linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#d3a24a"/><stop offset="100%" stop-color="#c96b4f"/></linearGradient></defs>
+            <rect width="40" height="40" rx="9" fill="#1c1624"/>
+            <rect x="10" y="8" width="6" height="24" rx="1.6" fill="url(#lg2)"/>
+            <rect x="16" y="8" width="15" height="6" rx="1.6" fill="url(#lg2)"/>
+            <rect x="16" y="18" width="10" height="6" rx="1.6" fill="url(#lg2)" opacity="0.85"/>
+            <circle cx="30.5" cy="30.5" r="3.2" fill="#4fa693"/></svg>
+          </div>
+          <div class="cap"><span class="dtag" style="color:#4fa693;">Live brand</span><h4>Faizan Development — self mark</h4></div>
+        </div>
         <div class="design-card" style="--dc:#d3a24a">
           <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=500&q=60" alt="Logo concept sketches on paper">
           <div class="cap"><span class="dtag">Concept 01</span><h4>Wordmark exploration</h4></div>
@@ -496,7 +579,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
           <div class="cap"><span class="dtag">Concept 04</span><h4>Brand application</h4></div>
         </div>
       </div>
-      <p class="design-note">Placeholder concept work — replace with real client logos when ready.</p>
+      <p class="design-note">The brand mark above is real, live work — this site's own logo. The rest are placeholder concepts to swap for your finished client logos.</p>
     </div>
   </section>
 
@@ -690,9 +773,10 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
     <div class="wrap contact-grid">
       <div>
         <h2>Let's talk it through.</h2>
-        <p style="color:var(--muted);margin-top:12px;max-width:48ch;font-size:14px;">The fastest way to reach me is email or WhatsApp. I usually reply within a day.</p>
+        <p style="color:var(--muted);margin-top:12px;max-width:48ch;font-size:14px;">The fastest way to reach me is email. I usually reply within a day.</p>
         <div class="contact-links">
-          <a href="mailto:you@example.com">you@example.com</a>
+          <a href="mailto:fazalfaizan310@gmail.com">fazalfaizan310@gmail.com</a>
+          <a href="tel:" class="muted-link">Phone — add your number</a>
           <a href="#">WhatsApp</a>
           <a href="#">GitHub</a>
           <a href="#">LinkedIn</a>
@@ -711,7 +795,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
 </section>
 
 <footer class="wrap">
-  <span style="display:flex;align-items:center;gap:8px;"><span class="brand-mark" style="width:20px;height:20px;font-size:11px;" aria-hidden="true">F</span> © 2026 Faizan Development</span>
+  <span style="display:flex;align-items:center;gap:8px;"><span class="brand-mark" style="width:20px;height:20px;" aria-hidden="true"><svg viewBox="0 0 40 40"><rect width="40" height="40" rx="9" fill="#1c1624"/><rect x="10" y="8" width="6" height="24" rx="1.6" fill="#d3a24a"/><rect x="16" y="8" width="15" height="6" rx="1.6" fill="#d3a24a"/><rect x="16" y="18" width="10" height="6" rx="1.6" fill="#c96b4f"/><circle cx="30.5" cy="30.5" r="3.2" fill="#4fa693"/></svg></span> © 2026 Faizan Development</span>
   <span>Built solo — code, design, and everything between</span>
 </footer>
 
@@ -727,7 +811,7 @@ function route(){
     a.classList.toggle('active', a.getAttribute('href') === '#'+navTarget);
   });
   window.scrollTo(0,0);
-  document.getElementById('navLinks').classList.remove('open');
+  closeMenu();
 }
 function go(id){ location.hash = id; }
 window.addEventListener('hashchange', route);
@@ -736,9 +820,31 @@ window.addEventListener('DOMContentLoaded', route);
 // ---- Mobile nav toggle ----
 const toggle = document.getElementById('navToggle');
 const links = document.getElementById('navLinks');
-toggle.addEventListener('click', ()=>{
-  links.classList.toggle('open');
-  toggle.textContent = links.classList.contains('open') ? '✕' : '☰';
+function closeMenu(){
+  links.classList.remove('open');
+  toggle.textContent = '☰';
+  toggle.setAttribute('aria-expanded','false');
+}
+function openMenu(){
+  links.classList.add('open');
+  toggle.textContent = '✕';
+  toggle.setAttribute('aria-expanded','true');
+}
+toggle.setAttribute('aria-expanded','false');
+toggle.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  links.classList.contains('open') ? closeMenu() : openMenu();
+});
+links.addEventListener('click', (e)=>{
+  if(e.target.tagName === 'A') closeMenu();
+});
+document.addEventListener('click', (e)=>{
+  if(links.classList.contains('open') && !links.contains(e.target) && e.target !== toggle){
+    closeMenu();
+  }
+});
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape' && links.classList.contains('open')) closeMenu();
 });
 
 // ---- Hero rotating role text ----
