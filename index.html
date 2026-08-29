@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Faizan Development — Web, App &amp; Design</title>
+<meta name="description" content="Faizan Development — web development, app development, logo design, graphic design and game design. Live client sites and personal builds, all designed and developed end to end.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2315111c'/%3E%3Ctext x='50' y='68' font-family='Georgia,serif' font-size='58' font-weight='700' fill='%23d3a24a' text-anchor='middle'%3EF%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -23,26 +25,29 @@ img{max-width:100%;display:block;border-radius:2px;}
 h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;letter-spacing:-.01em;}
 
 /* NAV */
-header{position:sticky;top:0;left:0;right:0;z-index:200;background:rgba(21,17,28,.92);backdrop-filter:blur(10px);border-bottom:1px solid rgba(241,236,226,.08);}
-.nav{max-width:1100px;margin:0 auto;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;}
-.nav-mark{font-family:'Fraunces',serif;font-weight:600;font-size:17px;}
-.nav-links{display:flex;gap:24px;list-style:none;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;}
-.nav-links a{color:var(--muted);transition:color .2s ease;padding-bottom:2px;border-bottom:1px solid transparent;}
+header{position:sticky;top:0;left:0;right:0;z-index:200;background:#15111c;backdrop-filter:blur(10px);border-bottom:1px solid rgba(241,236,226,.08);padding-top:env(safe-area-inset-top);width:100%;}
+.nav{max-width:1100px;margin:0 auto;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;min-height:34px;position:relative;}
+.nav-mark{font-family:'Fraunces',serif;font-weight:600;font-size:16px;line-height:1.5;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:9px;}
+.brand-mark{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:6px;background:linear-gradient(145deg,var(--gold),#a97c2f);color:var(--ink);font-family:'Fraunces',serif;font-weight:700;font-size:14px;flex-shrink:0;}
+.nav-links{display:flex;gap:24px;list-style:none;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;margin:0;}
+.nav-links a{color:var(--muted);transition:color .2s ease;padding-bottom:2px;border-bottom:1px solid transparent;line-height:1.4;}
 .nav-links a:hover,.nav-links a.active{color:var(--paper);border-color:var(--gold);}
-.nav-toggle{display:none;background:none;border:1px solid rgba(241,236,226,.25);color:var(--paper);width:38px;height:38px;border-radius:4px;font-size:16px;}
+.nav-toggle{display:none;background:none;border:1px solid rgba(241,236,226,.25);color:var(--paper);width:36px;height:36px;line-height:1;flex-shrink:0;border-radius:4px;font-size:16px;}
 @media (max-width:800px){
-  .nav-links{position:fixed;top:57px;left:0;right:0;bottom:0;background:var(--ink);flex-direction:column;gap:0;padding:10px 24px;transform:translateY(-110%);transition:transform .3s ease;overflow-y:auto;}
-  .nav-links.open{transform:translateY(0);}
-  .nav-links li{padding:16px 0;border-bottom:1px solid rgba(241,236,226,.08);font-size:13px;}
+  .nav{flex-wrap:nowrap;}
+  .nav-links{position:absolute;top:100%;left:0;right:0;background:#15111c;flex-direction:column;gap:0;padding:6px 20px 16px;max-height:0;overflow:hidden;transition:max-height .3s ease;border-bottom:1px solid rgba(241,236,226,.08);}
+  .nav-links.open{max-height:400px;overflow-y:auto;}
+  .nav-links li{padding:14px 0;border-bottom:1px solid rgba(241,236,226,.08);font-size:13px;}
   .nav-toggle{display:block;}
 }
 
 /* PAGES */
-.page{display:none;}
-.page.active{display:block;}
+.page{display:none !important;}
+.page.active{display:block !important;}
 
 /* HERO */
-.hero{min-height:82vh;display:flex;flex-direction:column;justify-content:center;padding:60px 0 40px;position:relative;}
+.hero{min-height:auto;display:flex;flex-direction:column;justify-content:center;padding:50px 0 30px;position:relative;}
+@media (min-width:700px){.hero{min-height:78vh;}}
 .hero-glow{position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(600px 400px at 15% 20%,rgba(211,162,74,.16),transparent 70%);transition:background .6s ease;}
 .hero-inner{position:relative;z-index:1;}
 .hero h1{font-size:clamp(38px,9vw,88px);line-height:1;margin:14px 0 8px;}
@@ -53,7 +58,8 @@ header{position:sticky;top:0;left:0;right:0;z-index:200;background:rgba(21,17,28
 .dial{display:flex;flex-wrap:wrap;gap:9px;margin-top:36px;}
 .dial button{font:inherit;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.07em;padding:9px 15px;border:1px solid rgba(241,236,226,.18);border-radius:100px;color:var(--muted);background:none;cursor:pointer;transition:all .25s ease;}
 .dial button:hover{color:var(--paper);border-color:var(--c,var(--gold));background:color-mix(in srgb,var(--c,var(--gold)) 14%,transparent);}
-.hero-photo{margin-top:44px;border-radius:4px;overflow:hidden;border:1px solid rgba(241,236,226,.12);max-height:280px;}
+.hero-photo{margin-top:32px;border-radius:4px;overflow:hidden;border:1px solid rgba(241,236,226,.12);max-height:180px;}
+@media (min-width:700px){.hero-photo{margin-top:44px;max-height:280px;}}
 .hero-photo img{width:100%;height:100%;object-fit:cover;}
 
 /* SECTIONS */
@@ -62,7 +68,8 @@ section{padding:70px 0;}
 .section-head{margin-bottom:36px;max-width:620px;}
 .section-head h2{font-size:clamp(26px,5vw,40px);margin-top:8px;}
 
-.page-header{padding:56px 0 40px;border-bottom:1px solid rgba(241,236,226,.1);}
+.page-header{padding:36px 0 30px;border-bottom:1px solid rgba(241,236,226,.1);}
+@media (min-width:700px){.page-header{padding:56px 0 40px;}}
 .page-header h1{font-size:clamp(30px,7vw,54px);margin-top:10px;}
 .page-header .sub{color:var(--muted);max-width:560px;margin-top:14px;font-size:15px;}
 
@@ -82,7 +89,8 @@ section{padding:70px 0;}
 /* CAPABILITIES */
 .cap-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:rgba(241,236,226,.12);border:1px solid rgba(241,236,226,.12);}
 .cap{background:var(--ink);display:flex;flex-direction:column;transition:background .3s ease;}
-.cap:hover{background:var(--surface);}
+.cap{transition:background .3s ease, transform .25s ease, box-shadow .25s ease;}
+.cap:hover{background:var(--surface);transform:translateY(-3px);box-shadow:0 14px 30px -12px rgba(0,0,0,.5);position:relative;z-index:2;}
 .cap img{width:100%;height:110px;object-fit:cover;border-radius:0;}
 .cap-body{padding:18px;}
 .cap .tag{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.1em;color:var(--tc);}
@@ -103,7 +111,8 @@ section{padding:70px 0;}
 /* WORK GRID */
 .work-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:rgba(241,236,226,.12);border:1px solid rgba(241,236,226,.12);}
 .work-card{background:var(--ink);display:flex;flex-direction:column;transition:background .3s ease;cursor:pointer;}
-.work-card:hover{background:var(--surface);}
+.work-card{transition:background .3s ease, transform .25s ease, box-shadow .25s ease;}
+.work-card:hover{background:var(--surface);transform:translateY(-3px);box-shadow:0 16px 34px -14px rgba(0,0,0,.55);position:relative;z-index:2;}
 .work-card img{width:100%;height:150px;object-fit:cover;}
 .work-card-body{padding:22px;display:flex;flex-direction:column;flex:1;}
 .work-card .work-meta{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--cc,var(--muted));letter-spacing:.08em;text-transform:uppercase;}
@@ -113,6 +122,21 @@ section{padding:70px 0;}
 .work-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;}
 .work-tags span{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 9px;border:1px solid rgba(241,236,226,.18);color:var(--muted);border-radius:100px;}
 @media (max-width:700px){.work-grid{grid-template-columns:1fr;}}
+
+/* DESIGN GALLERY (logo & graphic design samples) */
+.design-intro{max-width:640px;margin-bottom:28px;}
+.design-intro h2{font-size:clamp(24px,4.5vw,34px);margin-top:8px;}
+.design-intro p{color:var(--muted);font-size:14px;margin-top:10px;}
+.design-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.design-card{border-radius:6px;overflow:hidden;border:1px solid rgba(241,236,226,.12);background:var(--surface);transition:transform .25s ease, box-shadow .25s ease;}
+.design-card:hover{transform:translateY(-4px);box-shadow:0 16px 32px -14px rgba(0,0,0,.55);}
+.design-card img{width:100%;height:150px;object-fit:cover;}
+.design-card .cap{padding:12px 14px;}
+.design-card .cap .dtag{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dc,var(--gold));}
+.design-card .cap h4{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;margin-top:5px;color:var(--paper);}
+.design-note{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-top:16px;}
+@media (max-width:900px){.design-grid{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:480px){.design-grid{grid-template-columns:1fr;}}
 
 /* PROJECT DETAIL */
 .project-hero{padding:50px 0 40px;border-bottom:1px solid rgba(241,236,226,.1);background:linear-gradient(180deg,color-mix(in srgb,var(--pc,var(--gold)) 10%,transparent),transparent 60%);}
@@ -124,7 +148,8 @@ section{padding:70px 0;}
 .btn-row{display:flex;gap:14px;margin-top:26px;flex-wrap:wrap;}
 .btn{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.05em;padding:11px 20px;border-radius:100px;border:1px solid rgba(241,236,226,.25);transition:all .2s ease;}
 .btn-primary{background:var(--pc,var(--gold));color:var(--ink);border-color:transparent;}
-.btn-primary:hover{opacity:.85;}
+.btn-primary{box-shadow:0 8px 20px -8px color-mix(in srgb, var(--pc,var(--gold)) 60%, transparent);}
+.btn-primary:hover{opacity:.9;transform:translateY(-1px);}
 .btn-ghost{cursor:pointer;background:none;font:inherit;color:inherit;}
 .btn-ghost:hover{border-color:var(--pc,var(--gold));color:var(--pc,var(--gold));}
 .project-body{display:grid;grid-template-columns:1.4fr .9fr;gap:40px;padding:50px 0;}
@@ -171,7 +196,10 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
 
 <header>
   <nav class="nav">
-    <div class="nav-mark">Faizan Development</div>
+    <div class="nav-mark">
+      <span class="brand-mark" aria-hidden="true">F</span>
+      <span>Faizan Development</span>
+    </div>
     <ul class="nav-links" id="navLinks">
       <li><a href="#home">Home</a></li>
       <li><a href="#about">About</a></li>
@@ -441,6 +469,66 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
       </div>
     </div>
   </section>
+
+  <!-- LOGO DESIGN SAMPLES -->
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="design-intro">
+        <p class="eyebrow">Logo design</p>
+        <h2>Marks &amp; identity concepts.</h2>
+        <p>Sample concept work showing the kind of logo exploration and brand-mark thinking I do — swap these for your own finished client logos when you have them ready.</p>
+      </div>
+      <div class="design-grid">
+        <div class="design-card" style="--dc:#d3a24a">
+          <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=500&q=60" alt="Logo concept sketches on paper">
+          <div class="cap"><span class="dtag">Concept 01</span><h4>Wordmark exploration</h4></div>
+        </div>
+        <div class="design-card" style="--dc:#d3a24a">
+          <img src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=500&q=60" alt="Logo mockup on a business card">
+          <div class="cap"><span class="dtag">Concept 02</span><h4>Business card mockup</h4></div>
+        </div>
+        <div class="design-card" style="--dc:#d3a24a">
+          <img src="https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=500&q=60" alt="Brand identity design tools flatlay">
+          <div class="cap"><span class="dtag">Concept 03</span><h4>Icon-mark development</h4></div>
+        </div>
+        <div class="design-card" style="--dc:#d3a24a">
+          <img src="https://images.unsplash.com/photo-1541462608143-67571c6738dd?auto=format&fit=crop&w=500&q=60" alt="Designer working on branding on a laptop">
+          <div class="cap"><span class="dtag">Concept 04</span><h4>Brand application</h4></div>
+        </div>
+      </div>
+      <p class="design-note">Placeholder concept work — replace with real client logos when ready.</p>
+    </div>
+  </section>
+
+  <!-- GRAPHIC DESIGN SAMPLES -->
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="design-intro">
+        <p class="eyebrow">Graphic design</p>
+        <h2>Visual systems &amp; collateral.</h2>
+        <p>The kind of layout, color, and type work that gives a brand its face — shown here in Shahi Darbar's and Mobile Gallery's real visual identities, plus a few concept pieces.</p>
+      </div>
+      <div class="design-grid">
+        <div class="design-card" style="--dc:#c96b4f">
+          <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=500&q=60" alt="Restaurant brand photography styling">
+          <div class="cap"><span class="dtag">Shahi Darbar</span><h4>Royal brand identity</h4></div>
+        </div>
+        <div class="design-card" style="--dc:#c96b4f">
+          <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=500&q=60" alt="Retail store visual merchandising">
+          <div class="cap"><span class="dtag">Mobile Gallery</span><h4>Catalog-first layout</h4></div>
+        </div>
+        <div class="design-card" style="--dc:#c96b4f">
+          <img src="https://images.unsplash.com/photo-1558655146-364adaf1fcc9?auto=format&fit=crop&w=500&q=60" alt="Color palette and design swatches">
+          <div class="cap"><span class="dtag">Concept</span><h4>Color &amp; type system</h4></div>
+        </div>
+        <div class="design-card" style="--dc:#c96b4f">
+          <img src="https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&w=500&q=60" alt="Designer sketching a layout on paper">
+          <div class="cap"><span class="dtag">Concept</span><h4>Poster / collateral layout</h4></div>
+        </div>
+      </div>
+      <p class="design-note">Real work from Shahi Darbar &amp; Mobile Gallery, plus placeholder concepts to swap for your own.</p>
+    </div>
+  </section>
 </section>
 
 <!-- ============ PROJECT: LUMEN ============ -->
@@ -623,7 +711,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
 </section>
 
 <footer class="wrap">
-  <span>© 2026 Faizan Development</span>
+  <span style="display:flex;align-items:center;gap:8px;"><span class="brand-mark" style="width:20px;height:20px;font-size:11px;" aria-hidden="true">F</span> © 2026 Faizan Development</span>
   <span>Built solo — code, design, and everything between</span>
 </footer>
 
