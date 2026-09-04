@@ -1112,728 +1112,135 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-/* ============================================================================
-   HOME — SCROLL-DRIVEN 3D STAGE
-   A pinned canvas inside a tall track. Scroll progress (0 → 1) drives one
-   choreography: the laptop opens, its screen boots a live code editor, a phone
-   flies in, UI cards drift past, brand orbs orbit, and the camera pushes in and
-   pulls back out. Text acts cross-fade over the top. Everything is scroll-
-   *linked*, never scroll-jacked, and degrades to stacked sections without WebGL.
-============================================================================ */
+// ---- Spline-style 3D hero object: glossy abstract shape, lit, with scroll + cursor parallax ----
 (function(){
-  const canvas = document.getElementById('stage3d');
-  const track  = document.getElementById('stageTrack');
-  const home   = document.getElementById('home');
-  if(!canvas || !track || !home) return;
+  const canvas = document.getElementById('hero3d');
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!canvas || prefersReduced || typeof THREE === 'undefined') return;
 
-  const sticky   = track.querySelector('.stage-sticky');
-  const panels   = Array.prototype.slice.call(track.querySelectorAll('.panel'));
-  const railBtns = Array.prototype.slice.call(track.querySelectorAll('.stage-rail button'));
-  const bar      = document.getElementById('stageProgress');
-  const cue      = document.getElementById('scrollCue');
+  const heroEl = canvas.closest('.hero');
+  let width = heroEl.clientWidth, height = heroEl.clientHeight;
 
-  /* Act windows: [startFadeIn, fullyIn, startFadeOut, fullyOut] in scroll progress */
-  const ACTS = [
-    [-1.00, 0.00, 0.10, 0.17],
-    [ 0.20, 0.27, 0.36, 0.43],
-    [ 0.45, 0.52, 0.59, 0.65],
-    [ 0.66, 0.73, 0.80, 0.86],
-    [ 0.88, 0.94, 1.01, 1.02]
-  ];
-  const ACT_TINT = [0xd3a24a, 0x4fa693, 0xc07dc0, 0xc96b4f, 0xd3a24a];
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, width/height, 0.1, 100);
+  camera.position.set(0, 0, 8);
 
-  const clamp = (v,a,b)=> v<a?a:(v>b?b:v);
-  const ease  = (t)=> t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2;
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha:true, antialias:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(width, height);
 
-  /* Piecewise keyframe track: kf(p, [[at,value], ...]) with eased segments */
-  function kf(p, stops){
-    if(p <= stops[0][0]) return stops[0][1];
-    for(let i=0;i<stops.length-1;i++){
-      const a = stops[i], b = stops[i+1];
-      if(p >= a[0] && p <= b[0]){
-        const span = b[0]-a[0];
-        const t = span <= 0 ? 1 : (p-a[0])/span;
-        return a[1] + (b[1]-a[1]) * ease(t);
-      }
-    }
-    return stops[stops.length-1][1];
-  }
-  /* 0 → 1 → 1 → 0 envelope */
-  function band(p,a,b,c,d){
-    if(p<=a || p>=d) return 0;
-    if(p<b)  return ease((p-a)/(b-a));
-    if(p<=c) return 1;
-    return 1 - ease((p-c)/(d-c));
+  // Soft ambient light (kept for any lit materials; the network itself is unlit/glowing)
+  scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+
+  const group = new THREE.Group();
+  scene.add(group);
+
+  // Hero object — an AI / neural-network style node graph: light, glowing, developer-coded feel
+  const netGeo = new THREE.IcosahedronGeometry(2.2, 1);
+  const netMat = new THREE.MeshBasicMaterial({ color: 0xbfe1ff, wireframe: true, transparent: true, opacity: 0.28 });
+  const network = new THREE.Mesh(netGeo, netMat);
+  group.add(network);
+
+  // Glowing node points at each unique vertex — like an AI network graph
+  const posAttr = netGeo.attributes.position;
+  const seen = new Set();
+  const nodeGeo = new THREE.SphereGeometry(0.05, 10, 10);
+  const nodeColors = [0xffffff, 0xbfe1ff, 0xd9ccff, 0xbdf6e6];
+  for(let i=0;i<posAttr.count;i++){
+    const x = posAttr.getX(i), y = posAttr.getY(i), z = posAttr.getZ(i);
+    const key = x.toFixed(2)+','+y.toFixed(2)+','+z.toFixed(2);
+    if(seen.has(key)) continue;
+    seen.add(key);
+    const nodeMat = new THREE.MeshBasicMaterial({ color: nodeColors[i % nodeColors.length] });
+    const node = new THREE.Mesh(nodeGeo, nodeMat);
+    node.position.set(x, y, z);
+    network.add(node);
   }
 
-  /* ---- graceful fallback: reduced motion, no three.js, or no WebGL ---- */
-  function webglOK(){
-    try{
-      const c = document.createElement('canvas');
-      return !!(window.WebGLRenderingContext && (c.getContext('webgl') || c.getContext('experimental-webgl')));
-    }catch(e){ return false; }
-  }
-  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches || typeof THREE === 'undefined' || !webglOK()){
-    home.classList.add('no3d');
-    return;
-  }
+  // A thin outer halo ring — subtle "data orbit" accent
+  const ringGeo = new THREE.TorusGeometry(2.9, 0.008, 8, 100);
+  const ringMat = new THREE.MeshBasicMaterial({ color: 0xbfe1ff, transparent: true, opacity: 0.3 });
+  const ring = new THREE.Mesh(ringGeo, ringMat);
+  ring.rotation.x = Math.PI / 2.3;
+  group.add(ring);
 
-  /* ========================================================================
-     2D PAINTERS — every screen and card in the scene is a live canvas texture
-  ======================================================================== */
-  const MONO = "'JetBrains Mono', ui-monospace, Menlo, monospace";
-  const DISP = "'Fraunces', Georgia, serif";
+  // Two soft satellite orbs for depth, light-colored
+  const orbGeo = new THREE.SphereGeometry(0.42, 32, 32);
+  const orbMat = new THREE.MeshBasicMaterial({ color: 0xd9ccff, transparent: true, opacity: 0.55 });
+  const orb = new THREE.Mesh(orbGeo, orbMat);
+  orb.position.set(2.6, -1.4, -1);
+  group.add(orb);
 
-  function surface(w,h){
-    const c = document.createElement('canvas');
-    c.width = w; c.height = h;
-    const t = new THREE.CanvasTexture(c);
-    t.encoding = THREE.sRGBEncoding;
-    t.anisotropy = 4;
-    return { g:c.getContext('2d'), t:t, w:w, h:h };
-  }
-  function rr(g,x,y,w,h,r){
-    g.beginPath();
-    g.moveTo(x+r,y);
-    g.arcTo(x+w,y,x+w,y+h,r);
-    g.arcTo(x+w,y+h,x,y+h,r);
-    g.arcTo(x,y+h,x,y,r);
-    g.arcTo(x,y,x+w,y,r);
-    g.closePath();
-  }
+  const orb2Geo = new THREE.SphereGeometry(0.24, 32, 32);
+  const orb2Mat = new THREE.MeshBasicMaterial({ color: 0xbdf6e6, transparent: true, opacity: 0.55 });
+  const orb2 = new THREE.Mesh(orb2Geo, orb2Mat);
+  orb2.position.set(-2.3, 1.7, 0.5);
+  group.add(orb2);
 
-  /* ---- the laptop screen: a code editor that types itself out ---- */
-  const KW='#c07dc0', FN='#4fa693', ST='#d3a24a', PR='#7d8fd0', NM='#c96b4f', DM='#6f6880', TX='#f1ece2';
-  const CODE = [
-    [['const',KW],[' site',TX],[' = ',DM],['await ',KW],['build',FN],['({',DM]],
-    [['  client',PR],[': ',DM],["'Mobile Gallery'",ST],[',',DM]],
-    [['  stack',PR],[': [',DM],["'html'",ST],[', ',DM],["'css'",ST],[', ',DM],["'js'",ST],['],',DM]],
-    [['  features',PR],[': {',DM]],
-    [['    catalog',PR],[':  ',DM],['true',NM],[',',DM]],
-    [['    payments',PR],[': ',DM],["'upi'",ST],[',',DM]],
-    [['    admin',PR],[':    ',DM],['adminPanel',FN],['(),',DM]],
-    [['  },',DM]],
-    [['  design',PR],[': ',DM],['identity',FN],['(',DM],["'logo + type'",ST],['),',DM]],
-    [['});',DM]],
-    [],
-    [['export default',KW],[' ship',FN],['(site);',DM]]
-  ];
-  let CODE_TOTAL = 0;
-  CODE.forEach(l => l.forEach(tk => { CODE_TOTAL += tk[0].length; }));
+  group.position.x = 0; // centered, sitting in the background behind the text
+  group.position.z = -2; // pushed back so it reads as background, not a foreground object
+  group.scale.setScalar(1.5);
 
-  const SCREEN = surface(1024, 640);
-  function drawScreen(n){
-    const g = SCREEN.g, w = SCREEN.w, h = SCREEN.h;
-    g.clearRect(0,0,w,h);
-    g.fillStyle = '#0d0f17'; g.fillRect(0,0,w,h);
-
-    /* window chrome */
-    g.fillStyle = '#151827'; g.fillRect(0,0,w,44);
-    ['#c96b4f','#d3a24a','#4fa693'].forEach((c,i)=>{
-      g.fillStyle = c; g.beginPath(); g.arc(26+i*21,22,5.5,0,6.2832); g.fill();
-    });
-    g.font = '500 15px '+MONO; g.fillStyle = DM;
-    g.fillText('build.js — faizan-development', 112, 27);
-
-    /* file rail */
-    g.fillStyle = '#11131e'; g.fillRect(0,44,196,h-44);
-    g.fillStyle = '#241f31'; g.fillRect(195,44,1,h-44);
-    ['index.html','build.js','stage3d.js','brand.css','deploy.sh'].forEach((f,i)=>{
-      const y = 88+i*31;
-      if(i===1){
-        g.fillStyle = 'rgba(211,162,74,.11)'; g.fillRect(0,y-17,196,27);
-        g.fillStyle = '#d3a24a'; g.fillRect(0,y-17,2,27);
-      }
-      g.font = '500 14px '+MONO;
-      g.fillStyle = i===1 ? TX : DM;
-      g.fillText(f, 26, y);
-    });
-
-    /* code, revealed one character at a time */
-    const x0 = 244, y0 = 96, lh = 30;
-    let left = n, caretX = x0, caretY = y0;
-    for(let i=0;i<CODE.length;i++){
-      const y = y0 + i*lh;
-      if(y > h-172) break;
-      g.font = '500 13px '+MONO; g.fillStyle = '#332c45';
-      g.fillText(('0'+(i+1)).slice(-2), 208, y);
-      if(left <= 0) break;
-      g.font = '500 18px '+MONO;
-      let x = x0;
-      const line = CODE[i];
-      for(let k=0;k<line.length;k++){
-        if(left <= 0) break;
-        const txt = line[k][0];
-        const part = txt.slice(0, Math.min(txt.length, Math.floor(left)));
-        g.fillStyle = line[k][1];
-        g.fillText(part, x, y);
-        x += g.measureText(part).width;
-        left -= txt.length;
-      }
-      caretX = x; caretY = y;
-    }
-    if(Math.floor(Date.now()/440) % 2 === 0){
-      g.fillStyle = '#d3a24a';
-      g.fillRect(caretX+2, caretY-14, 2, 19);
-    }
-
-    /* terminal drawer */
-    const ty = h-158;
-    g.fillStyle = '#0a0b11'; g.fillRect(196,ty,w-196,h-ty);
-    g.fillStyle = '#241f31'; g.fillRect(196,ty,w-196,1);
-    g.font = '500 12px '+MONO; g.fillStyle = DM;
-    g.fillText('TERMINAL', 220, ty+26);
-    const done = n > CODE_TOTAL * 0.72;
-    const out = [['$ npm run deploy',TX],['✓ bundled in 1.24s',FN],['✓ live → mobilegallery.in',FN]];
-    out.forEach((l,i)=>{
-      if(i>0 && !done) return;
-      g.font = '500 15px '+MONO; g.fillStyle = l[1];
-      g.fillText(l[0], 220, ty+62+i*30);
-    });
-    SCREEN.t.needsUpdate = true;
-  }
-
-  /* ---- the base deck: keys, trackpad, hinge shadow ---- */
-  const DECK = surface(1024, 700);
-  (function drawDeck(){
-    const g = DECK.g, w = DECK.w, h = DECK.h;
-    const bg = g.createLinearGradient(0,0,0,h);
-    bg.addColorStop(0,'#221e2d'); bg.addColorStop(1,'#16131e');
-    g.fillStyle = bg; g.fillRect(0,0,w,h);
-
-    const hinge = g.createLinearGradient(0,0,0,96);
-    hinge.addColorStop(0,'rgba(0,0,0,.6)'); hinge.addColorStop(1,'rgba(0,0,0,0)');
-    g.fillStyle = hinge; g.fillRect(0,0,w,96);
-
-    const rows = [
-      [1,1,1,1,1,1,1,1,1,1,1,1,1,1.7],
-      [1.5,1,1,1,1,1,1,1,1,1,1,1,1,1.1],
-      [1.8,1,1,1,1,1,1,1,1,1,1,1,1.9],
-      [2.3,1,1,1,1,1,1,1,1,1,1,2.4],
-      [1.3,1.3,1.3,6.2,1.3,1.3,1.3,1.3]
-    ];
-    const padX = 66, top = 120, kh = 52, gap = 9;
-    rows.forEach((row,ri)=>{
-      const units = row.reduce((a,b)=>a+b,0);
-      const usable = w - padX*2 - gap*(row.length-1);
-      const y = top + ri*(kh+gap);
-      let x = padX;
-      row.forEach((u,ki)=>{
-        const kw = usable*(u/units);
-        rr(g,x,y,kw,kh,7);
-        const kg = g.createLinearGradient(0,y,0,y+kh);
-        kg.addColorStop(0,'#302b3f'); kg.addColorStop(1,'#221f2e');
-        g.fillStyle = kg; g.fill();
-        g.strokeStyle = 'rgba(0,0,0,.55)'; g.lineWidth = 1.5; g.stroke();
-        g.fillStyle = 'rgba(241,236,226,.055)'; g.fillRect(x+5,y+3,kw-10,2);
-        if(ri===0 && ki===row.length-1){ g.fillStyle = 'rgba(211,162,74,.5)'; g.fillRect(x+kw/2-7,y+kh/2-1.5,14,3); }
-        x += kw+gap;
-      });
-    });
-
-    const tw = 296, th = 172, tx = (w-tw)/2, tyy = top + 5*(kh+gap) + 26;
-    rr(g,tx,tyy,tw,th,13);
-    g.fillStyle = '#1c1926'; g.fill();
-    g.strokeStyle = 'rgba(241,236,226,.09)'; g.lineWidth = 2; g.stroke();
-    g.fillStyle = 'rgba(211,162,74,.22)'; g.fillRect(padX, h-18, w-padX*2, 2);
-    DECK.t.needsUpdate = true;
-  })();
-
-  /* ---- the phone: a music app, waveform live ---- */
-  const PHONE = surface(540, 1100);
-  function drawPhone(now){
-    const g = PHONE.g, w = PHONE.w, h = PHONE.h;
-    g.clearRect(0,0,w,h);
-    g.fillStyle = '#0f1017'; g.fillRect(0,0,w,h);
-    const halo = g.createRadialGradient(w/2,200,8,w/2,200,440);
-    halo.addColorStop(0,'rgba(192,125,192,.3)'); halo.addColorStop(1,'rgba(192,125,192,0)');
-    g.fillStyle = halo; g.fillRect(0,0,w,660);
-
-    rr(g,w/2-58,20,116,26,13); g.fillStyle = '#07080c'; g.fill();
-    g.font = '500 21px '+MONO; g.fillStyle = '#8d84a0';
-    g.fillText('9:41', 34, 60);
-    [0,1,2].forEach(i=>{ g.fillStyle='#8d84a0'; g.fillRect(w-38-i*15, 44+i*5, 8, 17-i*5); });
-
-    g.font = '600 30px '+MONO; g.fillStyle = TX; g.fillText('Flora AI', 36, 152);
-    g.font = '500 19px '+MONO; g.fillStyle = '#8d84a0'; g.fillText('now playing', 36, 186);
-
-    const as = 430, ax = (w-as)/2, ay = 218;
-    const art = g.createLinearGradient(ax,ay,ax+as,ay+as);
-    art.addColorStop(0,'#c07dc0'); art.addColorStop(0.52,'#7d8fd0'); art.addColorStop(1,'#4fa693');
-    rr(g,ax,ay,as,as,26); g.fillStyle = art; g.fill();
-    g.globalAlpha = 0.22; g.fillStyle = '#15111c';
-    g.beginPath(); g.arc(w/2, ay+as/2, as*0.23, 0, 6.2832); g.fill();
-    g.globalAlpha = 1; g.fillStyle = '#0f1017';
-    g.beginPath(); g.arc(w/2, ay+as/2, 15, 0, 6.2832); g.fill();
-
-    g.font = '600 32px '+MONO; g.fillStyle = TX; g.fillText('Offline Mode', 36, ay+as+66);
-    g.font = '500 19px '+MONO; g.fillStyle = '#8d84a0'; g.fillText('local library · 214 tracks', 36, ay+as+100);
-
-    const bx = 36, by = ay+as+140, bars = 32, bw = (w-72)/bars, maxH = 104;
-    for(let i=0;i<bars;i++){
-      const amp = 0.22 + 0.78*Math.abs(Math.sin(now*0.0021 + i*0.52))*Math.abs(Math.cos(i*0.29));
-      const bh = 16 + amp*(maxH-16);
-      g.fillStyle = (i/bars) < 0.42 ? '#c07dc0' : 'rgba(141,132,160,.45)';
-      rr(g, bx+i*bw, by+(maxH-bh)/2, bw-5, bh, 3); g.fill();
-    }
-
-    const cy = by + maxH + 78;
-    g.fillStyle = '#c07dc0';
-    g.beginPath(); g.arc(w/2, cy, 46, 0, 6.2832); g.fill();
-    g.fillStyle = '#15111c';
-    g.fillRect(w/2-13, cy-18, 8, 36); g.fillRect(w/2+5, cy-18, 8, 36);
-    g.fillStyle = '#8d84a0';
-    [-1,1].forEach(s=>{
-      const px = w/2 + s*112;
-      g.beginPath();
-      g.moveTo(px + s*14, cy-15); g.lineTo(px + s*14, cy+15); g.lineTo(px - s*12, cy);
-      g.closePath(); g.fill();
-    });
-    PHONE.t.needsUpdate = true;
-  }
-
-  /* ---- floating UI cards ---- */
-  function cardBase(s){
-    const g = s.g, w = s.w, h = s.h;
-    g.clearRect(0,0,w,h);
-    rr(g,3,3,w-6,h-6,22);
-    g.fillStyle = 'rgba(23,20,31,.9)'; g.fill();
-    g.strokeStyle = 'rgba(241,236,226,.16)'; g.lineWidth = 2.5; g.stroke();
-  }
-
-  const CARD_TERM = surface(640, 400);
-  function drawTerm(now){
-    const s = CARD_TERM, g = s.g;
-    cardBase(s);
-    ['#c96b4f','#d3a24a','#4fa693'].forEach((c,i)=>{
-      g.fillStyle = c; g.beginPath(); g.arc(34+i*20,38,5,0,6.2832); g.fill();
-    });
-    g.font = '500 14px '+MONO; g.fillStyle = DM; g.fillText('zsh — build', 112, 43);
-    g.fillStyle = 'rgba(241,236,226,.1)'; g.fillRect(24,62,592,1);
-    const lines = [['$ git push origin main',TX],['Enumerating objects: 42, done.',DM],['✓ deploy queued',FN],['✓ lighthouse 98 / 100',FN],['$ _',ST]];
-    lines.forEach((l,i)=>{
-      g.font = '500 17px '+MONO; g.fillStyle = l[1];
-      const txt = (i===4 && Math.floor(now/440)%2===0) ? '$' : l[0];
-      g.fillText(txt, 30, 104+i*44);
-    });
-    s.t.needsUpdate = true;
-  }
-
-  const CARD_LITE = surface(640, 400);
-  (function drawLite(){
-    const s = CARD_LITE, g = s.g, w = s.w;
-    cardBase(s);
-    g.font = '500 13px '+MONO; g.fillStyle = DM; g.fillText('LIGHTHOUSE', 30, 44);
-    g.font = '600 26px '+DISP; g.fillStyle = TX; g.fillText('Built to score', 30, 80);
-    const metrics = [['Performance',98,'#4fa693'],['Accessibility',100,'#d3a24a'],['Best practices',100,'#7d8fd0'],['SEO',96,'#c07dc0']];
-    metrics.forEach((m,i)=>{
-      const y = 130+i*58;
-      g.font = '500 15px '+MONO; g.fillStyle = '#a99bb0'; g.fillText(m[0], 30, y+5);
-      g.fillStyle = 'rgba(241,236,226,.1)';
-      rr(g,250,y-8,300,12,6); g.fill();
-      g.fillStyle = m[2];
-      rr(g,250,y-8,300*(m[1]/100),12,6); g.fill();
-      g.font = '500 15px '+MONO; g.fillStyle = TX;
-      g.fillText(String(m[1]), 570, y+5);
-    });
-    s.t.needsUpdate = true;
-  })();
-
-  const CARD_BRAND = surface(640, 400);
-  (function drawBrand(){
-    const s = CARD_BRAND, g = s.g;
-    cardBase(s);
-    g.font = '500 13px '+MONO; g.fillStyle = DM; g.fillText('BRAND SYSTEM', 30, 44);
-    g.font = '600 30px '+DISP; g.fillStyle = TX; g.fillText('Mark, type, palette', 30, 86);
-    /* the studio mark, drawn from the same shapes as the site favicon */
-    const mx = 32, my = 116, u = 118;
-    rr(g,mx,my,u,u,22); g.fillStyle = '#1c1624'; g.fill();
-    g.fillStyle = '#d3a24a';
-    rr(g,mx+28,my+22,18,74,5); g.fill();
-    rr(g,mx+46,my+22,44,18,5); g.fill();
-    g.fillStyle = '#c96b4f';
-    rr(g,mx+46,my+50,30,18,5); g.fill();
-    g.fillStyle = '#4fa693';
-    g.beginPath(); g.arc(mx+92,my+92,11,0,6.2832); g.fill();
-    /* type specimen + palette */
-    g.font = '600 78px '+DISP; g.fillStyle = TX; g.fillText('Aa', 186, 196);
-    g.font = '500 14px '+MONO; g.fillStyle = DM; g.fillText('Fraunces / Space Grotesk', 186, 226);
-    ['#d3a24a','#4fa693','#c96b4f','#7d8fd0','#c07dc0'].forEach((c,i)=>{
-      g.fillStyle = c;
-      g.beginPath(); g.arc(48+i*62, 314, 25, 0, 6.2832); g.fill();
-    });
-    g.font = '500 13px '+MONO; g.fillStyle = DM; g.fillText('gold · teal · coral · violet · pink', 372, 320);
-    s.t.needsUpdate = true;
-  })();
-
-  const GLOW = surface(256,256);
-  (function(){
-    const g = GLOW.g;
-    const r = g.createRadialGradient(128,128,4,128,128,124);
-    r.addColorStop(0,'rgba(255,255,255,.95)');
-    r.addColorStop(0.45,'rgba(255,255,255,.26)');
-    r.addColorStop(1,'rgba(255,255,255,0)');
-    g.fillStyle = r; g.fillRect(0,0,256,256);
-    GLOW.t.needsUpdate = true;
-  })();
-
-  /* ========================================================================
-     SCENE
-  ======================================================================== */
-  let renderer;
-  try{
-    renderer = new THREE.WebGLRenderer({ canvas:canvas, alpha:true, antialias:true, powerPreference:'high-performance' });
-  }catch(e){
-    home.classList.add('no3d');
-    return;
-  }
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  renderer.outputEncoding = THREE.sRGBEncoding;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.06;
-
-  const scene  = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 200);
-  const rig    = new THREE.Group();
-  scene.add(rig);
-
-  scene.add(new THREE.AmbientLight(0x8f83ad, 0.8));
-  const keyLight = new THREE.DirectionalLight(0xfff3e0, 1.3);
-  keyLight.position.set(3.6, 5.4, 6.4);
-  scene.add(keyLight);
-  const rimLight = new THREE.PointLight(0xd3a24a, 2.4, 26);
-  rimLight.position.set(-5.4, 2.6, -2.4);
-  scene.add(rimLight);
-  const fillLight = new THREE.PointLight(0x4fa693, 1.5, 24);
-  fillLight.position.set(5.6, -2.4, 3.6);
-  scene.add(fillLight);
-
-  /* rounded slab geometry — gives the chassis real bevels instead of hard boxes */
-  function roundedShape(w,h,r){
-    const s = new THREE.Shape();
-    const x = -w/2, y = -h/2;
-    s.moveTo(x+r, y);
-    s.lineTo(x+w-r, y);   s.quadraticCurveTo(x+w, y, x+w, y+r);
-    s.lineTo(x+w, y+h-r); s.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
-    s.lineTo(x+r, y+h);   s.quadraticCurveTo(x, y+h, x, y+h-r);
-    s.lineTo(x, y+r);     s.quadraticCurveTo(x, y, x+r, y);
-    return s;
-  }
-  function slab(w,h,d,r){
-    const bev = Math.min(d*0.28, 0.028);
-    const geo = new THREE.ExtrudeGeometry(roundedShape(w,h,r), {
-      depth: Math.max(d - bev*2, 0.008),
-      bevelEnabled: true, bevelThickness: bev, bevelSize: bev, bevelSegments: 2,
-      curveSegments: 8
-    });
-    geo.center();
-    return geo;
-  }
-
-  const matChassis = new THREE.MeshStandardMaterial({ color:0x2a2634, metalness:0.7, roughness:0.35 });
-
-  /* ---- laptop ---- */
-  const laptop = new THREE.Group();
-  rig.add(laptop);
-
-  const BW = 4.5, BD = 3.05, BH = 0.17;
-  const base = new THREE.Mesh(slab(BW, BD, BH, 0.14), matChassis);
-  base.rotation.x = -Math.PI/2;            /* lay the slab flat: local Z becomes height */
-  laptop.add(base);
-
-  const deck = new THREE.Mesh(
-    new THREE.PlaneGeometry(BW-0.3, BD-0.3),
-    new THREE.MeshBasicMaterial({ map:DECK.t, toneMapped:false })
-  );
-  deck.rotation.x = -Math.PI/2;
-  deck.position.y = BH/2 + 0.003;
-  laptop.add(deck);
-
-  /* lid rotates about the hinge at the back edge of the base */
-  const lid = new THREE.Group();
-  lid.position.set(0, BH/2, -BD/2 + 0.08);
-  laptop.add(lid);
-
-  const LW = 4.5, LH = 2.92, LT = 0.11;
-  const lidShell = new THREE.Mesh(slab(LW, LH, LT, 0.13), matChassis);
-  lidShell.position.set(0, LH/2, 0);
-  lid.add(lidShell);
-
-  const glass = new THREE.Mesh(
-    new THREE.PlaneGeometry(LW-0.2, LH-0.24),
-    new THREE.MeshStandardMaterial({ color:0x080910, metalness:0.45, roughness:0.14 })
-  );
-  glass.position.set(0, LH/2, LT/2 + 0.004);
-  lid.add(glass);
-
-  const screenMat = new THREE.MeshBasicMaterial({ map:SCREEN.t, transparent:true, opacity:0, toneMapped:false });
-  const screen = new THREE.Mesh(new THREE.PlaneGeometry((LW-0.2)*0.955, (LH-0.24)*0.94), screenMat);
-  screen.position.set(0, LH/2, LT/2 + 0.008);
-  lid.add(screen);
-
-  /* screen spill light — a soft additive halo that only shows once the lid is lit */
-  const spillMat = new THREE.MeshBasicMaterial({
-    map:GLOW.t, color:0x9fd4ff, transparent:true, opacity:0,
-    blending:THREE.AdditiveBlending, depthWrite:false, toneMapped:false
-  });
-  const spill = new THREE.Mesh(new THREE.PlaneGeometry(7.4, 5.4), spillMat);
-  spill.position.set(0, LH/2, LT/2 + 0.05);
-  lid.add(spill);
-
-  /* ground bloom under the whole machine */
-  const underMat = new THREE.MeshBasicMaterial({
-    map:GLOW.t, color:0xd3a24a, transparent:true, opacity:0.18,
-    blending:THREE.AdditiveBlending, depthWrite:false, toneMapped:false
-  });
-  const under = new THREE.Mesh(new THREE.PlaneGeometry(9, 6.4), underMat);
-  under.rotation.x = -Math.PI/2;
-  under.position.y = -0.42;
-  rig.add(under);
-
-  /* ---- phone ---- */
-  const phone = new THREE.Group();
-  phone.visible = false;
-  rig.add(phone);
-  const PW = 1.08, PH = 2.2, PT = 0.11;
-  phone.add(new THREE.Mesh(slab(PW, PH, PT, 0.17), matChassis));
-  const phoneScreen = new THREE.Mesh(
-    new THREE.PlaneGeometry(PW-0.1, PH-0.13),
-    new THREE.MeshBasicMaterial({ map:PHONE.t, toneMapped:false })
-  );
-  phoneScreen.position.z = PT/2 + 0.005;
-  phone.add(phoneScreen);
-
-  /* ---- floating cards ---- */
-  function floatCard(surf, w, h){
-    const mesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(w,h),
-      new THREE.MeshBasicMaterial({ map:surf.t, transparent:true, opacity:0, toneMapped:false, depthWrite:false, side:THREE.DoubleSide })
-    );
-    mesh.visible = false;
-    rig.add(mesh);
-    return mesh;
-  }
-  const cardTerm  = floatCard(CARD_TERM,  2.5, 1.56);
-  const cardLite  = floatCard(CARD_LITE,  2.4, 1.5);
-  const cardBrand = floatCard(CARD_BRAND, 2.36, 1.47);
-
-  /* ---- brand orbs + orbit ring for the design act ---- */
-  const design = new THREE.Group();
-  design.visible = false;
-  rig.add(design);
-  const orbs = [0xd3a24a, 0x4fa693, 0xc96b4f, 0x7d8fd0].map((c,i)=>{
-    const m = new THREE.Mesh(
-      new THREE.SphereGeometry(0.21, 24, 24),
-      new THREE.MeshStandardMaterial({ color:c, emissive:c, emissiveIntensity:0.3, metalness:0.4, roughness:0.22, transparent:true, opacity:0 })
-    );
-    const a = (i/4)*Math.PI*2;
-    m.position.set(Math.cos(a)*3.0, [1.6,-1.5,1.2,-1.1][i], Math.sin(a)*1.7);
-    m.userData.y = m.position.y;
-    design.add(m);
-    return m;
-  });
-  const ringMat = new THREE.MeshBasicMaterial({ color:0xd3a24a, transparent:true, opacity:0 });
-  const ring = new THREE.Mesh(new THREE.TorusGeometry(3.15, 0.006, 6, 120), ringMat);
-  ring.rotation.x = Math.PI/2.3;
-  design.add(ring);
-
-  /* ---- dust ---- */
-  const DUST_N = window.innerWidth < 820 ? 380 : 900;
-  const dustPos = new Float32Array(DUST_N*3);
-  for(let i=0;i<DUST_N;i++){
-    dustPos[i*3]   = (Math.random()-0.5)*28;
-    dustPos[i*3+1] = (Math.random()-0.5)*16;
-    dustPos[i*3+2] = (Math.random()-0.5)*18 - 4;
-  }
-  const dustGeo = new THREE.BufferGeometry();
-  dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
-  const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({
-    color:0xbfe1ff, size:0.03, transparent:true, opacity:0.45, depthWrite:false, sizeAttenuation:true
-  }));
-  scene.add(dust);
-
-  /* ========================================================================
-     DRIVE
-  ======================================================================== */
-  let vw = 0, vh = 0, small = false;
   function resize(){
-    const w = sticky.clientWidth, h = sticky.clientHeight;
-    if(w < 2 || h < 2) return false;
-    vw = w; vh = h;
-    small = vw < 820;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, small ? 1.75 : 2));
-    renderer.setSize(vw, vh, false);
-    camera.aspect = vw/vh;
+    width = heroEl.clientWidth; height = heroEl.clientHeight;
+    if(width === 0 || height === 0) return;
+    camera.aspect = width/height;
     camera.updateProjectionMatrix();
-    rig.scale.setScalar(small ? 0.74 : 1);
-    return true;
+    renderer.setSize(width, height);
+    // shrink and recenter on narrow screens so it doesn't fight the text
+    if(width < 700){ group.position.x = 0; group.scale.setScalar(0.9); }
+    else { group.position.x = 0; group.scale.setScalar(1.5); }
   }
-
-  function progress(){
-    const total = track.offsetHeight - vh;
-    if(total <= 0) return 0;
-    return clamp(-track.getBoundingClientRect().top / total, 0, 1);
-  }
-
-  /* text acts + rail + progress bar */
-  let actIndex = 0;
-  function paintUI(p){
-    let best = -1;
-    for(let i=0;i<ACTS.length;i++){
-      const r = ACTS[i], v = band(p, r[0], r[1], r[2], r[3]), el = panels[i];
-      const mid = (r[1]+r[2])/2;
-      el.style.opacity   = v.toFixed(3);
-      el.style.transform = 'translate3d(0,' + ((1-v)*26 * (p < mid ? 1 : -1)).toFixed(1) + 'px,0)';
-      el.style.visibility = v < 0.008 ? 'hidden' : 'visible';
-      el.classList.toggle('is-live', v > 0.5);
-      if(v > best){ best = v; actIndex = i; }
-    }
-    for(let i=0;i<railBtns.length;i++) railBtns[i].classList.toggle('on', i === actIndex);
-    if(bar) bar.style.width = (p*100).toFixed(2) + '%';
-    if(cue) cue.style.opacity = (1 - clamp(p/0.05, 0, 1)).toFixed(2);
-  }
-
-  const tint = new THREE.Color();
-  let p = 0, ps = 0, mx = 0, my = 0, cx = 0, cy = 0;
-  let typed = 0, lastPaint = 0, active = false;
-
-  function placeCard(m, x, y, z, ry, now, sp){
-    m.visible = m.material.opacity > 0.012;
-    if(!m.visible) return;
-    const out = 1 - m.material.opacity;
-    const k = small ? 0.72 : 1;
-    m.position.set(x*k + out*0.6*(x<0?-1:1), y*k + Math.sin(now*0.0006*sp)*0.13 - out*0.3, z);
-    m.rotation.set(Math.sin(now*0.0005*sp)*0.05, ry, Math.cos(now*0.0004*sp)*0.03);
-  }
-
-  function frame(now){
-    requestAnimationFrame(frame);
-    if(!active) return;
-    if(sticky.clientHeight !== vh || sticky.clientWidth !== vw){
-      if(!resize()) return;
-    }
-
-    const r = track.getBoundingClientRect();
-    p = progress();
-    paintUI(p);
-    if(r.bottom < -40 || r.top > window.innerHeight + 40) return;   /* stage off screen */
-
-    ps += (p - ps) * 0.12;
-    cx += (mx - cx) * 0.045;
-    cy += (my - cy) * 0.045;
-
-    /* --- lid + screen --- */
-    lid.rotation.x = kf(ps, [[0,1.52],[0.09,1.50],[0.27,-0.26],[1,-0.26]]);
-    const lit = kf(ps, [[0.13,0],[0.25,1]]);
-    screenMat.opacity = lit;
-    spillMat.opacity  = lit * 0.5;
-    underMat.opacity  = 0.14 + lit*0.2;
-
-    /* --- rig: slide opposite the active text column, centre for the finale --- */
-    const gx = small ? 0 : kf(ps, [
-      [0,1.18],[0.14,1.16],[0.25,-1.28],[0.40,-1.24],
-      [0.50,1.22],[0.62,1.18],[0.72,-1.22],[0.84,-1.18],[0.93,0],[1,0]
-    ]);
-    const gy = (small ? 0.66 : 0) + kf(ps, [[0,-0.2],[0.3,0],[0.62,0.02],[1,-0.28]]);
-    rig.position.x += (gx - rig.position.x) * 0.09;
-    rig.position.y += (gy - rig.position.y) * 0.09;
-
-    rig.rotation.y = kf(ps, [
-      [0,-0.52],[0.14,-0.34],[0.25,0.36],[0.40,0.30],
-      [0.50,-0.34],[0.62,-0.30],[0.72,0.34],[0.84,0.30],[0.93,-0.05],[1,-0.16]
-    ]) + cx*0.22 + Math.sin(now*0.00035)*0.03;
-    rig.rotation.x = kf(ps, [[0,0.12],[0.28,0.05],[0.55,0.02],[0.8,0.11],[1,0.15]]) + cy*0.09;
-    rig.rotation.z = Math.sin(now*0.00028)*0.012;
-    laptop.position.y = Math.sin(now*0.0008)*0.045;
-
-    /* --- camera push in / pull back --- */
-    const cz = kf(ps, [[0,10.4],[0.26,7.7],[0.44,7.0],[0.60,7.7],[0.76,7.3],[0.92,8.8],[1,9.4]]) * (small ? 1.34 : 1);
-    camera.position.set(0, kf(ps, [[0,1.55],[0.28,1.12],[0.5,0.92],[0.72,1.5],[1,1.95]]), cz);
-    camera.lookAt(0, kf(ps, [[0,0.5],[0.3,0.78],[0.6,0.62],[1,0.35]]), 0);
-
-    /* --- phone flies in for the app act --- */
-    const pin = band(ps, 0.40, 0.51, 0.74, 0.85);
-    phone.visible = pin > 0.012;
-    if(phone.visible){
-      phone.position.set(
-        small ? 1.5 : 2.6,
-        (small ? -0.1 : -0.25) + (1-pin)*-1.5 + Math.sin(now*0.0011)*0.06,
-        small ? 2.2 : 1.8
-      );
-      phone.rotation.set(0.06, -0.44 + pin*0.32, -0.1 + (1-pin)*0.35);
-      phone.scale.setScalar(0.45 + pin*0.6);
-    }
-
-    /* --- cards --- */
-    cardTerm.material.opacity  = band(ps, 0.22, 0.32, 0.80, 0.90) * 0.97;
-    cardLite.material.opacity  = band(ps, 0.26, 0.36, 0.60, 0.70) * 0.97;
-    cardBrand.material.opacity = band(ps, 0.62, 0.72, 0.94, 1.01) * 0.97;
-    placeCard(cardTerm,  -2.8,  1.5,  1.4,  0.42, now, 0.9);
-    placeCard(cardLite,   2.9,  1.7,  0.6, -0.40, now, 1.15);
-    placeCard(cardBrand, -2.6, -1.4,  1.9,  0.36, now, 0.8);
-
-    /* --- brand orbs --- */
-    const din = band(ps, 0.60, 0.71, 0.95, 1.02);
-    design.visible = din > 0.012;
-    if(design.visible){
-      design.rotation.y = now*0.00022;
-      ringMat.opacity = din*0.45;
-      for(let i=0;i<orbs.length;i++){
-        orbs[i].material.opacity = din;
-        orbs[i].position.y = orbs[i].userData.y + Math.sin(now*0.0009 + i)*0.12;
-        orbs[i].scale.setScalar(0.6 + din*0.4);
-      }
-    }
-
-    /* --- ambience --- */
-    dust.rotation.y = now*0.00004;
-    dust.position.y = ps * 1.6;
-    rimLight.color.lerp(tint.setHex(ACT_TINT[actIndex]), 0.045);
-
-    /* --- repaint the live screens, throttled to ~14fps --- */
-    if(lit > 0.03 && now - lastPaint > 70){
-      lastPaint = now;
-      typed += 2.6;
-      if(typed > CODE_TOTAL + 150) typed = 0;
-      drawScreen(typed);
-      if(phone.visible) drawPhone(now);
-      if(cardTerm.visible) drawTerm(now);
-    }
-
-    renderer.render(scene, camera);
-  }
-
-  /* ---- input ---- */
-  window.addEventListener('mousemove', (e)=>{
-    mx = (e.clientX/window.innerWidth - 0.5) * 2;
-    my = (e.clientY/window.innerHeight - 0.5) * 2;
-  }, { passive:true });
-
-  railBtns.forEach((b)=>{
-    b.addEventListener('click', ()=>{
-      const at = parseFloat(b.getAttribute('data-at')) || 0;
-      const total = track.offsetHeight - (vh || window.innerHeight);
-      const top = track.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop) + total*at;
-      window.scrollTo({ top: Math.max(top, 0), behavior:'smooth' });
-    });
-  });
-
   window.addEventListener('resize', resize);
 
-  /* ---- only run while Home is the active page and the tab is visible ---- */
-  function syncActive(){
-    active = home.classList.contains('active') && !document.hidden;
-    if(active) requestAnimationFrame(()=>{ resize(); });
-  }
-  new MutationObserver(syncActive).observe(home, { attributes:true, attributeFilter:['class'] });
-  document.addEventListener('visibilitychange', syncActive);
+  let scrollFactor = 0;
+  window.addEventListener('scroll', ()=>{ scrollFactor = window.scrollY; }, { passive:true });
 
-  drawScreen(0);
-  drawPhone(0);
-  drawTerm(0);
+  // Smooth cursor-follow parallax, like Spline's interactive scenes
+  let targetX = 0, targetY = 0, curX = 0, curY = 0;
+  window.addEventListener('mousemove', (e)=>{
+    targetX = (e.clientX / window.innerWidth - 0.5) * 2;
+    targetY = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
+
+  let running = true;
+  function animate(){
+    if(!running){ requestAnimationFrame(animate); return; }
+
+    network.rotation.x += 0.0022;
+    network.rotation.y += 0.0032;
+    ring.rotation.z += 0.0018;
+    orb.rotation.y += 0.006;
+    orb2.rotation.y -= 0.005;
+
+    const t = Date.now() * 0.0006;
+    orb.position.y = -1.4 + Math.sin(t) * 0.25;
+    orb2.position.y = 1.7 + Math.cos(t * 1.3) * 0.2;
+
+    // ease cursor parallax toward target
+    curX += (targetX - curX) * 0.04;
+    curY += (targetY - curY) * 0.04;
+    group.rotation.y = curX * 0.35 + scrollFactor * 0.0009;
+    group.rotation.x = curY * 0.2;
+    group.position.y = Math.min(scrollFactor, 700) * -0.0016;
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // Pause rendering when the home page isn't visible, and re-measure the canvas
+  // the moment it becomes visible again (it was 0x0 while .page was display:none)
+  const homePage = document.getElementById('home');
+  const obs = new MutationObserver(()=>{
+    running = homePage.classList.contains('active');
+    if(running) requestAnimationFrame(resize);
+  });
+  obs.observe(homePage, { attributes:true, attributeFilter:['class'] });
+  running = homePage.classList.contains('active');
+  if(running) requestAnimationFrame(resize);
+
   resize();
-  syncActive();
-  requestAnimationFrame(frame);
 })();
 </script>
 <script>
